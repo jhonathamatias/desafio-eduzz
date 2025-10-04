@@ -1,0 +1,26 @@
+{
+  "name": "desafio-eduzz",
+  "version": "1.0.0",
+  "main": "src/main.ts",
+  "repository": "git@github.com:jhonathamatias/desafio-eduzz.git",
+  "author": "Jhonatha Matias <jhonathamatias35@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "start": "yarn ts-node src/main.ts",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+  },
+  "devDependencies": {
+    "@eduzz/eslint-config": "^2.5.6",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.6.2",
+    "eslint": "^9.37.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
