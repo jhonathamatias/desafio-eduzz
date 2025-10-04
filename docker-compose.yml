@@ -1,0 +1,27 @@
+services:
+  node:
+    image: node:22.20-alpine3.22
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "3009:3000"
+    command: sh -c "yarn install && yarn start"
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres:16-alpine3.19
+    ports:
+      - "5434:5432"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+
+  redis:
+    image: redis/redis-stack:7.4.0-v7
+    ports:
+      - "6379:6379"
