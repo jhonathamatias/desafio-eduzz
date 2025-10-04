@@ -10,18 +10,27 @@
   },
   "scripts": {
     "start": "ts-node-dev --respawn --transpile-only src/main.ts",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "test": "jest",
+    "test:watch": "ts-jest --watch",
+    "test:coverage": "ts-jest --coverage"
   },
   "devDependencies": {
     "@eduzz/eslint-config": "^2.5.6",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.6.2",
     "eslint": "^9.37.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.4",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2"
   }
 }

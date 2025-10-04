@@ -20,3 +20,7 @@ reload:
 .PHONY: logs
 logs:
 	docker compose logs -f node
+
+.PHONY: test
+test:
+	docker compose exec node yarn test
