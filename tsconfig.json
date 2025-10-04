@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "es2024",
+        "moduleResolution": "nodenext",
+        "module": "nodenext",
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"],
+            "@errors/*": ["src/errors/*"]
+        }
+    },
+    "include": ["src/**/*"],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ],
+    "ts-node": {
+        "files": true
+    }
+}
