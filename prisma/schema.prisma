@@ -21,6 +21,17 @@ model Account {
   password   String
   created_at DateTime? @default(now())
   updated_at DateTime @updatedAt
+  deposits   Deposit[] @relation("AccountDeposits")
 
   @@map("accounts")
+}
+
+model Deposit {
+  id         String   @id @default(uuid())
+  accountId  String
+  amount     Float
+  created_at DateTime? @default(now())
+  account    Account  @relation("AccountDeposits", fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("deposits")
 }
