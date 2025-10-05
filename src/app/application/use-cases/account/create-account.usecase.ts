@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 
-import { type CreateAccountDto, type GetAccountDto } from '@/app/application/dtos/account.dto';
+import { type CreateAccountDto, type GetAccountDto } from '@/app/application/dtos';
 import AccountEntity from '@/app/domain/entities/account.entity';
 import { Email } from '@/app/domain/value-objects';
 import { type IRepository } from '@/app/infrastructure/repositories/interfaces';
