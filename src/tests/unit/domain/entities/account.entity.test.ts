@@ -1,5 +1,5 @@
 import AccountEntity from '@/app/domain/entities/account.entity';
-import { AlreadyExistsError } from '@/app/domain/errors';
+import { AlreadyExistsError, InvalidError } from '@/app/domain/errors';
 import { Email } from '@/app/domain/value-objects';
 
 describe('AccountEntity', () => {
@@ -17,15 +17,21 @@ describe('AccountEntity', () => {
     const email = new Email('test@example.com');
     const account = new AccountEntity('John Doe', email, 'password123', '123');
 
-    expect(() => account.alreadyExists()).toThrow(AlreadyExistsError);
-    expect(() => account.alreadyExists()).toThrow('Account already exists');
+    expect(account.accountExists()).toBe(true);
   });
 
   it('should return false if account does not exist', () => {
     const email = new Email('test@example.com');
     const account = new AccountEntity('John Doe', email, 'password123');
 
-    expect(account.alreadyExists()).toBe(false);
+    expect(account.accountExists()).toBe(false);
+  });
+
+  it('should throw InvalidError when checking validity of a non-existing account', () => {
+    const email = new Email('test@example.com');
+    const account = new AccountEntity('John Doe', email, 'password123');
+
+    expect(() => account.isValid()).toThrow(InvalidError);
   });
 
   it('should return true if account can be saved', () => {

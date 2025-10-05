@@ -8,9 +8,9 @@ import type { ICriteria, IRepository } from '@/app/infrastructure/repositories/i
 
 export default class ValidateLoginUseCase implements IApplicationCommand {
   constructor(
-    protected jwt: Jwt,
-    protected repository: IRepository,
-    protected criteria: ICriteria
+    protected readonly jwt: Jwt,
+    protected readonly repository: IRepository,
+    protected readonly criteria: ICriteria
   ) {}
 
   public async execute({ email, password }: ValidateLoginDto): Promise<{ token: string }> {

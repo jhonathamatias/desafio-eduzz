@@ -1,25 +1,23 @@
 import bcrypt from 'bcrypt';
+import { mock, type MockProxy } from 'jest-mock-extended';
 
 import CreateAccountUseCase from '@/app/application/use-cases/account/create-account.usecase';
 import { type IRepository } from '@/app/infrastructure/repositories/interfaces';
 
 describe('CreateAccountUseCase', () => {
   let createAccountUseCase: CreateAccountUseCase;
-  let mockRepository: IRepository;
+  let repository: MockProxy<IRepository>;
 
   beforeEach(() => {
-    mockRepository = {
-      setCollection: jest.fn(),
-      save: jest.fn(),
-      getInsertedLastId: jest.fn().mockResolvedValue('123'),
-      getById: jest.fn().mockResolvedValue({
-        id: '123',
-        name: 'John Doe',
-        email: 'john.doe@example.com'
-      })
-    } as unknown as IRepository;
+    repository = mock<IRepository>();
+    repository.getInsertedLastId.mockResolvedValue('123');
+    repository.getById.mockResolvedValue({
+      id: '123',
+      name: 'John Doe',
+      email: 'john.doe@example.com'
+    });
 
-    createAccountUseCase = new CreateAccountUseCase(mockRepository);
+    createAccountUseCase = new CreateAccountUseCase(repository);
   });
 
   it('should create an account successfully', async () => {
@@ -31,14 +29,14 @@ describe('CreateAccountUseCase', () => {
 
     const result = await createAccountUseCase.execute({ name, email, password });
 
-    expect(mockRepository.setCollection).toHaveBeenCalledWith('accounts');
-    expect(mockRepository.save).toHaveBeenCalledWith({
+    expect(repository.setCollection).toHaveBeenCalledWith('accounts');
+    expect(repository.save).toHaveBeenCalledWith({
       name,
       email,
       password: 'hashedPasswordMock'
     });
-    expect(mockRepository.getInsertedLastId).toHaveBeenCalled();
-    expect(mockRepository.getById).toHaveBeenCalledWith('123');
+    expect(repository.getInsertedLastId).toHaveBeenCalled();
+    expect(repository.getById).toHaveBeenCalledWith('123');
     expect(result).toEqual({
       id: '123',
       name,
@@ -52,7 +50,7 @@ describe('CreateAccountUseCase', () => {
     const password = 'password123';
 
     jest.spyOn(bcrypt, 'hash').mockResolvedValue('hashedPasswordMock' as never);
-    (mockRepository.getById as jest.Mock).mockResolvedValue(null);
+    repository.getById.mockResolvedValue(null);
 
     await expect(createAccountUseCase.execute({ name, email, password })).rejects.toThrow('Account creation failed');
   });

@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
 import { type CreateAccountDto, type GetAccountDto } from '@/app/application/dtos';
-import AccountEntity from '@/app/domain/entities/account.entity';
+import { AccountEntity } from '@/app/domain/entities';
 import { Email } from '@/app/domain/value-objects';
 import { type IRepository } from '@/app/infrastructure/repositories/interfaces';
 
@@ -14,7 +14,7 @@ type AccountType = {
 };
 
 export default class CreateAccountUseCase implements IApplicationCommand {
-  constructor(protected repository: IRepository) {}
+  constructor(protected readonly repository: IRepository) {}
 
   public async execute({ name, email, password }: CreateAccountDto): Promise<GetAccountDto> {
     const hashedPassword = await this.hashPassword(password);

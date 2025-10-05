@@ -1,5 +1,6 @@
 import { AlreadyExistsError } from '../errors';
-import { type Email } from '../value-objects/email.vo';
+import { InvalidError } from '../errors/invalid.error';
+import { type Email } from '../value-objects';
 
 export default class AccountEntity {
   constructor(
@@ -9,16 +10,23 @@ export default class AccountEntity {
     public id?: string
   ) {}
 
-  public alreadyExists(): boolean {
-    if (this.id) {
-      throw new AlreadyExistsError('Account already exists');
+  public accountExists(): boolean {
+    return !!this.id;
+  }
+
+  public isValid(): boolean {
+    if (this.accountExists() === false) {
+      throw new InvalidError('Account not found');
     }
 
-    return false;
+    return true;
   }
 
   public canBeSaved(): boolean {
-    this.alreadyExists();
+    if (this.accountExists()) {
+      throw new AlreadyExistsError('Account already exists');
+    }
+
     return true;
   }
 }
