@@ -1,9 +1,9 @@
 .PHONY: setup
 setup:
-	cp .env.example .env
-	docker build . -f docker/dev.Dockerfile -t hyperf-dev-server --no-cache
-	docker run --rm -v ".:/opt/www" -u ${UID}:${GID} hyperf-dev-server composer install
-
+	cp .env.dist .env
+	./shell/gen-keys
+	./shell/prisma migrate
+	
 .PHONY: start
 start:
 	docker compose up -d
