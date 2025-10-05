@@ -5,13 +5,15 @@ import AccountEntity from '@/app/domain/entities/account.entity';
 import { Email } from '@/app/domain/value-objects';
 import { type IRepository } from '@/app/infrastructure/repositories/interfaces';
 
+import type IApplicationCommand from '../interfaces/application-command.interface';
+
 type AccountType = {
   id: string;
   name: string;
   email: string;
 };
 
-export default class CreateAccountUseCase {
+export default class CreateAccountUseCase implements IApplicationCommand {
   constructor(protected repository: IRepository) {}
 
   public async execute({ name, email, password }: CreateAccountDto): Promise<GetAccountDto> {
