@@ -1,6 +1,6 @@
 import AccountEntity from '@/app/domain/entities/account.entity';
 import { AlreadyExistsError } from '@/app/domain/errors';
-import { Email } from '@/app/domain/value-objects/email.vo';
+import { Email } from '@/app/domain/value-objects';
 
 describe('AccountEntity', () => {
   it('should create an account entity with valid properties', () => {

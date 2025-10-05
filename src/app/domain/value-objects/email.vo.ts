@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export class Email {
+export default class Email {
   private readonly value: string;
 
   constructor(email: string) {
