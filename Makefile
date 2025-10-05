@@ -24,3 +24,11 @@ logs:
 .PHONY: test
 test:
 	docker compose exec node yarn test
+
+.PHONY: gen-keys
+gen-keys:
+	./shell/gen-keys
+
+.PHONY: container
+container:
+	docker compose exec node sh

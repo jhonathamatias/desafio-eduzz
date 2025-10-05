@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# shellcheck disable=SC2068
+
+# Verificar se o diretório "keys" existe no container e removê-lo
+docker compose exec node sh -c "if [ -d /app/keys ]; then echo 'Removendo diretório existente no container...'; rm -rf /app/keys; fi"
+
+# Criar o diretório "keys" no container
+docker compose exec node sh -c "mkdir -p /app/keys && chmod 700 /app/keys"
+
+# Gerar as chaves RSA dentro do container
+docker compose exec node sh -c "openssl genrsa -out /app/keys/private.pem 2048"
+docker compose exec node sh -c "openssl rsa -in /app/keys/private.pem -pubout -out /app/keys/public.pem"
+
+echo "Chaves RSA geradas com sucesso no container em './keys'."

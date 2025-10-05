@@ -6,7 +6,7 @@ services:
       - .:/app
     ports:
       - "3009:3000"
-    command: sh -c "yarn install && yarn start"
+    command: sh -c "apk add --no-cache openssl && yarn install && yarn start"
     env_file:
       - .env
 
