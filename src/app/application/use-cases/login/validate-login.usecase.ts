@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 
-import type ValidateLoginDto from '@/app/application/dtos/login/validate-login.dto';
+import { type ValidateLoginDto } from '@/app/application/dtos/login.dto';
 import { CredentialsError, NotFoundError } from '@/app/application/errors';
 import type IApplicationCommand from '@/app/application/use-cases/interfaces/application-command.interface';
 import type Jwt from '@/app/infrastructure/auth/jwt';
