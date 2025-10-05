@@ -14,11 +14,14 @@ export default class ValidateLoginUseCase implements IApplicationCommand {
   ) {}
 
   public async execute({ email, password }: ValidateLoginDto): Promise<{ token: string }> {
-    const { password: storedPassword, userId } = (await this.getAccount(email)) as { password: string; userId: string };
+    const { password: storedPassword, accountId } = (await this.getAccount(email)) as {
+      password: string;
+      accountId: string;
+    };
 
     await this.validatePasswords(password, storedPassword);
 
-    const token = this.generateToken(userId);
+    const token = this.generateToken(accountId);
 
     return { token };
   }
@@ -47,8 +50,8 @@ export default class ValidateLoginUseCase implements IApplicationCommand {
     return isPasswordValid;
   }
 
-  protected generateToken(userId: string): string {
-    const token = this.jwt.generateToken({ userId }, 3600);
+  protected generateToken(accountId: string): string {
+    const token = this.jwt.generateToken({ accountId }, 3600);
     return token;
   }
 }

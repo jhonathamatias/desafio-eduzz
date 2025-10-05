@@ -34,12 +34,12 @@ describe('ValidateLoginUseCase', () => {
   it('should generate a token for valid credentials', async () => {
     const email = 'test@example.com';
     const password = 'password123';
-    const userId = 'user123';
+    const accountId = 'account123';
     const hashedPassword = 'hashedPasswordMock';
 
     jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
 
-    matchingResult.first.mockResolvedValue({ password: hashedPassword, userId });
+    matchingResult.first.mockResolvedValue({ password: hashedPassword, accountId });
 
     jest.spyOn(mockJwt, 'generateToken').mockReturnValue('mockToken');
 
@@ -47,7 +47,7 @@ describe('ValidateLoginUseCase', () => {
 
     expect(mockRepository.setCollection).toHaveBeenCalledWith('accounts');
     expect(mockCriteria.equal).toHaveBeenCalledWith('email', email);
-    expect(mockJwt.generateToken).toHaveBeenCalledWith({ userId }, 3600);
+    expect(mockJwt.generateToken).toHaveBeenCalledWith({ accountId }, 3600);
     expect(result).toEqual({ token: 'mockToken' });
   });
 
