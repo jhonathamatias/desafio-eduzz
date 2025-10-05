@@ -20,6 +20,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.6.2",
     "eslint": "^9.37.0",
     "jest": "^30.2.0",
