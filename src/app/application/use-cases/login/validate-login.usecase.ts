@@ -27,7 +27,7 @@ export default class ValidateLoginUseCase implements IApplicationCommand {
     this.repository.setCollection('accounts');
     this.criteria.equal('email', email);
 
-    const account = await this.repository.matching(this.criteria).first();
+    const account = (await this.repository.matching(this.criteria)).first();
 
     if (!account) {
       throw new NotFoundError('Account not found.');
