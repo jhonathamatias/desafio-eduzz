@@ -1,5 +1,6 @@
 import CreateAccountUseCase from '@/app/application/use-cases/account/create-account.usecase';
 import DepositToAccountUseCase from '@/app/application/use-cases/account/deposit-to-account.usecase';
+import { GetAccountBalanceUseCase } from '@/app/application/use-cases/account/get-account-balance.usecase';
 import { GetValidAccountUseCase } from '@/app/application/use-cases/account/get-valid-account.usecase';
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
 import Jwt from '@/app/infrastructure/auth/jwt';
@@ -31,6 +32,13 @@ export default function () {
   c.register(DepositToAccountUseCase.name, () => {
     return new DepositToAccountUseCase(
       c.resolve<PrismaRepository>(PrismaRepository.name),
+      c.resolve<DepositPrismaRepository>(DepositPrismaRepository.name),
+      c.resolve<GetValidAccountUseCase>(GetValidAccountUseCase.name)
+    );
+  });
+
+  c.register(GetAccountBalanceUseCase.name, () => {
+    return new GetAccountBalanceUseCase(
       c.resolve<DepositPrismaRepository>(DepositPrismaRepository.name),
       c.resolve<GetValidAccountUseCase>(GetValidAccountUseCase.name)
     );

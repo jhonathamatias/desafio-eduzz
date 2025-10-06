@@ -17,6 +17,11 @@ router.post('/account/deposit', authMiddleware, (req: Request, res: Response) =>
   return accountController.deposit(req, res);
 });
 
+router.get('/account/balance', authMiddleware, (req: Request, res: Response) => {
+  const accountController = container.resolve<AccountController>(AccountController.name);
+  return accountController.getBalance(req, res);
+});
+
 router.post('/login', (req: Request, res: Response) => {
   const loginController = container.resolve<LoginController>(LoginController.name);
   return loginController.login(req, res);

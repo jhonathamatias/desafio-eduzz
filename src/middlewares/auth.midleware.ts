@@ -23,7 +23,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     const decoded = jwt.verifyToken(token) as { accountId: string };
 
     console.log('Decoded token:', decoded); // Debug log
-    req.body.accountId = decoded.accountId;
+    req.params.accountId = decoded.accountId;
   } catch (error: Error | any) {
     console.error('Token verification failed:', error); // Debug log
     return res.status(401).json({ error: error.message || 'Invalid token' });
