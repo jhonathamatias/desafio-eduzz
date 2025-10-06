@@ -5,7 +5,7 @@ import { Email } from '@/app/domain/value-objects';
 import { type IRepository } from '@/app/infrastructure/repositories/interfaces';
 
 export class GetValidAccountUseCase {
-  constructor(private readonly repository: IRepository) {}
+  constructor(protected readonly repository: IRepository) {}
 
   public async execute(accountId: string): Promise<AccountEntity> {
     const account = (await this.repository.getById(accountId)) as (GetAccountDto & { password: string }) | null;
