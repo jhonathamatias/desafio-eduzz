@@ -4,7 +4,7 @@ import { type CreateAccountDto, type GetAccountDto } from '@/app/application/dto
 import { NotFoundError } from '@/app/application/errors';
 import { AccountEntity } from '@/app/domain/entities';
 import { Email } from '@/app/domain/value-objects';
-import { type IRepository } from '@/app/infrastructure/repositories/interfaces';
+import { type ICriteria, type IRepository } from '@/app/infrastructure/repositories/interfaces';
 
 import type IApplicationCommand from '../interfaces/application-command.interface';
 
@@ -15,17 +15,21 @@ type AccountType = {
 };
 
 export default class CreateAccountUseCase implements IApplicationCommand {
-  constructor(protected readonly repository: IRepository) {}
+  constructor(
+    protected readonly repository: IRepository,
+    protected readonly criteria: ICriteria
+  ) {}
 
   public async execute({ name, email, password }: CreateAccountDto): Promise<GetAccountDto> {
+    const existingAccount = await this.emailExists(email);
     const hashedPassword = await this.hashPassword(password);
 
-    const account = new AccountEntity(name, new Email(email), hashedPassword);
+    const account = new AccountEntity(name, new Email(email), hashedPassword, existingAccount?.id);
 
     account.canBeSaved();
 
     const accountId = await this.saveAccount(account);
-    const createdAccount = await this.getAccount(accountId);
+    const createdAccount = await this.getAccountCreated(accountId);
 
     if (!createdAccount) {
       throw new NotFoundError('Account creation failed');
@@ -51,7 +55,7 @@ export default class CreateAccountUseCase implements IApplicationCommand {
     return await this.repository.getInsertedLastId();
   }
 
-  protected async getAccount(id: string): Promise<GetAccountDto | null> {
+  protected async getAccountCreated(id: string): Promise<GetAccountDto | null> {
     this.repository.setCollection('accounts');
 
     const account = (await this.repository.getById(id)) as AccountType | null;
@@ -65,5 +69,13 @@ export default class CreateAccountUseCase implements IApplicationCommand {
       name: account.name,
       email: account.email
     };
+  }
+
+  protected async emailExists(email: string): Promise<AccountType | null> {
+    this.repository.setCollection('accounts');
+    this.criteria.equal('email', email);
+
+    const result = await this.repository.matching(this.criteria);
+    return (await result.first()) as AccountType;
   }
 }
