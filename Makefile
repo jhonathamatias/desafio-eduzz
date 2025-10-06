@@ -1,6 +1,7 @@
 .PHONY: setup
 setup:
 	cp .env.dist .env
+	docker compose up -d
 	./shell/gen-keys
 	./shell/prisma migrate
 	
