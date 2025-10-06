@@ -1,6 +1,6 @@
 import { type Request, type Response, type NextFunction } from 'express';
 
-import { NotFoundError } from '@/app/application/errors';
+import { CredentialsError, NotFoundError } from '@/app/application/errors';
 import { AlreadyExistsError, InvalidError } from '@/app/domain/errors';
 
 export function errorHandler(err: Error, req: Request, res: Response, next: NextFunction): Response {
@@ -14,6 +14,10 @@ export function errorHandler(err: Error, req: Request, res: Response, next: Next
 
   if (err instanceof InvalidError) {
     return res.status(400).json({ error: err.message });
+  }
+
+  if (err instanceof CredentialsError) {
+    return res.status(401).json({ error: err.message });
   }
 
   console.error(err);

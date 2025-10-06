@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 
-import { CredentialsError, NotFoundError } from '@/app/application/errors';
+import { CredentialsError } from '@/app/application/errors';
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
 import type Jwt from '@/app/infrastructure/auth/jwt';
 import type { ICriteria, IRepository } from '@/app/infrastructure/repositories/interfaces';
@@ -25,7 +25,8 @@ describe('ValidateLoginUseCase', () => {
     } as unknown as IRepository;
 
     mockCriteria = {
-      equal: jest.fn()
+      equal: jest.fn(),
+      clear: jest.fn()
     } as unknown as ICriteria;
 
     validateLoginUseCase = new ValidateLoginUseCase(mockJwt, mockRepository, mockCriteria);
@@ -57,7 +58,7 @@ describe('ValidateLoginUseCase', () => {
 
     matchingResult.first.mockResolvedValue(null);
 
-    await expect(validateLoginUseCase.execute({ email, password })).rejects.toThrow(NotFoundError);
+    await expect(validateLoginUseCase.execute({ email, password })).rejects.toThrow(CredentialsError);
   });
 
   it('should throw an error if the password is invalid', async () => {
@@ -72,6 +73,6 @@ describe('ValidateLoginUseCase', () => {
   });
 
   it('should throw an error if email or password is missing', async () => {
-    await expect(validateLoginUseCase.execute({ email: '', password: '' })).rejects.toThrow(NotFoundError);
+    await expect(validateLoginUseCase.execute({ email: '', password: '' })).rejects.toThrow(CredentialsError);
   });
 });

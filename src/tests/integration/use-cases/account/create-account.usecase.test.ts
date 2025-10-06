@@ -2,11 +2,12 @@ import bcrypt from 'bcrypt';
 import { mock, type MockProxy } from 'jest-mock-extended';
 
 import CreateAccountUseCase from '@/app/application/use-cases/account/create-account.usecase';
-import { type IRepository } from '@/app/infrastructure/repositories/interfaces';
+import { type ICriteria, type IRepository } from '@/app/infrastructure/repositories/interfaces';
 
 describe('CreateAccountUseCase', () => {
   let createAccountUseCase: CreateAccountUseCase;
   let repository: MockProxy<IRepository>;
+  let criteria: MockProxy<ICriteria>;
 
   beforeEach(() => {
     repository = mock<IRepository>();
@@ -16,8 +17,20 @@ describe('CreateAccountUseCase', () => {
       name: 'John Doe',
       email: 'john.doe@example.com'
     });
+    criteria = mock<ICriteria>();
+    repository.matching.mockResolvedValue({
+      add: jest.fn(),
+      remove: jest.fn(),
+      toArray: jest.fn(),
+      count: jest.fn(),
+      first: jest.fn(),
+      getIterator: jest.fn(),
+      last: jest.fn(),
+      setItems: jest.fn(),
+      [Symbol.iterator]: jest.fn()
+    });
 
-    createAccountUseCase = new CreateAccountUseCase(repository);
+    createAccountUseCase = new CreateAccountUseCase(repository, criteria);
   });
 
   it('should create an account successfully', async () => {

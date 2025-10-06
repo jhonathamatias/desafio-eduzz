@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
 import { type ValidateLoginDto } from '@/app/application/dtos';
-import { CredentialsError, NotFoundError } from '@/app/application/errors';
+import { CredentialsError } from '@/app/application/errors';
 import type IApplicationCommand from '@/app/application/use-cases/interfaces/application-command.interface';
 import type Jwt from '@/app/infrastructure/auth/jwt';
 import type { ICriteria, IRepository } from '@/app/infrastructure/repositories/interfaces';
@@ -28,13 +28,14 @@ export default class ValidateLoginUseCase implements IApplicationCommand {
 
   protected async getAccount(email: string): Promise<any> {
     this.repository.setCollection('accounts');
+    this.criteria.clear();
     this.criteria.equal('email', email);
 
     const result = await this.repository.matching(this.criteria);
     const account = await result.first();
 
     if (!account) {
-      throw new NotFoundError('Account not found.');
+      throw new CredentialsError('invalid login');
     }
 
     return account;
@@ -44,7 +45,7 @@ export default class ValidateLoginUseCase implements IApplicationCommand {
     const isPasswordValid = await bcrypt.compare(plainPassword, hashedPassword);
 
     if (!isPasswordValid) {
-      throw new CredentialsError('Invalid password');
+      throw new CredentialsError('invalid password');
     }
 
     return isPasswordValid;
