@@ -8,6 +8,7 @@ export class GetValidAccountUseCase {
   constructor(protected readonly repository: IRepository) {}
 
   public async execute(accountId: string): Promise<AccountEntity> {
+    this.repository.setCollection('accounts');
     const account = (await this.repository.getById(accountId)) as (GetAccountDto & { password: string }) | null;
 
     if (!account) {
