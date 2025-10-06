@@ -1,10 +1,13 @@
 import cors from 'cors';
 import express from 'express';
 
+import registerDependencies from '@/dependecies';
+import { errorHandler } from '@/middlewares/error-handler';
 import routes from '@/routes';
 
-import { errorHandler } from '../middlewares/error-handler';
 const app = express();
+
+registerDependencies();
 
 app.use(express.json());
 app.use(routes);
