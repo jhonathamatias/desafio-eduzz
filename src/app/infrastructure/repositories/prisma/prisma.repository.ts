@@ -13,8 +13,7 @@ export default class PrismaRepository implements IRepository {
   }
 
   public setCollection(collection: string): void {
-    this.collection = collection.endsWith('s') ? collection.slice(0, -1) : collection;
-    console.log(`Collection set to: ${this.collection}`);
+    this.collection = this.formatCollectionName(collection);
   }
 
   public async save(entity: object): Promise<boolean> {

@@ -14,9 +14,9 @@ export default class ValidateLoginUseCase implements IApplicationCommand {
   ) {}
 
   public async execute({ email, password }: ValidateLoginDto): Promise<{ token: string }> {
-    const { password: storedPassword, accountId } = (await this.getAccount(email)) as {
+    const { password: storedPassword, id: accountId } = (await this.getAccount(email)) as {
       password: string;
-      accountId: string;
+      id: string;
     };
 
     await this.validatePasswords(password, storedPassword);

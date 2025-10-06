@@ -1,21 +1,38 @@
 import CreateAccountUseCase from '@/app/application/use-cases/account/create-account.usecase';
+import DepositToAccountUseCase from '@/app/application/use-cases/account/deposit-to-account.usecase';
+import { GetValidAccountUseCase } from '@/app/application/use-cases/account/get-valid-account.usecase';
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
 import Jwt from '@/app/infrastructure/auth/jwt';
+import { DepositPrismaRepository } from '@/app/infrastructure/repositories/prisma/deposit.prisma.repository';
 import PrismaCriteria from '@/app/infrastructure/repositories/prisma/prisma.criteria';
 import PrismaRepository from '@/app/infrastructure/repositories/prisma/prisma.repository';
-import { container } from '@/container';
+import { container as c } from '@/container';
 
 export default function () {
-  container.register(CreateAccountUseCase.name, () => {
-    const repository = container.resolve<PrismaRepository>(PrismaRepository.name);
-    const criteria = container.resolve<PrismaCriteria>(PrismaCriteria.name);
-    return new CreateAccountUseCase(repository, criteria);
+  c.register(CreateAccountUseCase.name, () => {
+    return new CreateAccountUseCase(
+      c.resolve<PrismaRepository>(PrismaRepository.name),
+      c.resolve<PrismaCriteria>(PrismaCriteria.name)
+    );
   });
 
-  container.register(ValidateLoginUseCase.name, () => {
-    const repository = container.resolve<PrismaRepository>(PrismaRepository.name);
-    const criteria = container.resolve<PrismaCriteria>(PrismaCriteria.name);
-    const jwt = container.resolve<Jwt>(Jwt.name);
-    return new ValidateLoginUseCase(jwt, repository, criteria);
+  c.register(ValidateLoginUseCase.name, () => {
+    return new ValidateLoginUseCase(
+      c.resolve<Jwt>(Jwt.name),
+      c.resolve<PrismaRepository>(PrismaRepository.name),
+      c.resolve<PrismaCriteria>(PrismaCriteria.name)
+    );
+  });
+
+  c.register<GetValidAccountUseCase>(GetValidAccountUseCase.name, () => {
+    return new GetValidAccountUseCase(c.resolve<PrismaRepository>(PrismaRepository.name));
+  });
+
+  c.register(DepositToAccountUseCase.name, () => {
+    return new DepositToAccountUseCase(
+      c.resolve<PrismaRepository>(PrismaRepository.name),
+      c.resolve<DepositPrismaRepository>(DepositPrismaRepository.name),
+      c.resolve<GetValidAccountUseCase>(GetValidAccountUseCase.name)
+    );
   });
 }

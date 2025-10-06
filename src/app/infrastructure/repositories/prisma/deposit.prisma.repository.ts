@@ -2,7 +2,7 @@ import { type PrismaClient } from '@prisma/client';
 
 import { type IDepositRepository } from '../interfaces';
 
-export class DepositRepository implements IDepositRepository {
+export class DepositPrismaRepository implements IDepositRepository {
   constructor(protected prisma: PrismaClient) {}
 
   public async sumAmountsByAccountId(accountId: string): Promise<number> {

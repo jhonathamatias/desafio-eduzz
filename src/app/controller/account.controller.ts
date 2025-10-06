@@ -4,7 +4,10 @@ import { type GetAccountDto } from '@/app/application/dtos';
 import type IApplicationCommand from '@/app/application/use-cases/interfaces/application-command.interface';
 
 export default class AccountController {
-  constructor(protected createAccountUseCase: IApplicationCommand<GetAccountDto>) {}
+  constructor(
+    protected readonly createAccountUseCase: IApplicationCommand<GetAccountDto>,
+    protected readonly depositToAccountUseCase: IApplicationCommand<{ balance: number }>
+  ) {}
 
   public create = async (req: Request, res: Response): Promise<Response> => {
     const { name, email, password } = req.body;
@@ -12,5 +15,13 @@ export default class AccountController {
     const account = await this.createAccountUseCase.execute({ name, email, password });
 
     return res.status(201).json({ ...account });
+  };
+
+  public deposit = async (req: Request, res: Response): Promise<Response> => {
+    const { accountId, amount } = req.body;
+
+    const balance = this.depositToAccountUseCase.execute({ accountId, amount });
+
+    return res.status(201).json(balance);
   };
 }
