@@ -28,7 +28,7 @@ describe('DepositToAccountUseCase', () => {
     getValidAccountUseCase.execute.mockResolvedValue(accountEntity);
     depositRepository.sumAmountsByAccountId.mockResolvedValue(500);
 
-    await depositToAccountUseCase.execute({ accountId, amount });
+    const result = await depositToAccountUseCase.execute({ accountId, amount });
 
     expect(getValidAccountUseCase.execute).toHaveBeenCalledWith(accountId);
     expect(repository.setCollection).toHaveBeenCalledWith('deposits');
@@ -36,6 +36,7 @@ describe('DepositToAccountUseCase', () => {
       accountId,
       amount
     });
+    expect(result).toEqual({ balance: 500 });
   });
 
   it('should throw an error if the deposit is invalid', async () => {
