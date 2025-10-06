@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 
 import { type CreateAccountDto, type GetAccountDto } from '@/app/application/dtos';
+import { NotFoundError } from '@/app/application/errors';
 import { AccountEntity } from '@/app/domain/entities';
 import { Email } from '@/app/domain/value-objects';
 import { type IRepository } from '@/app/infrastructure/repositories/interfaces';
@@ -27,7 +28,7 @@ export default class CreateAccountUseCase implements IApplicationCommand {
     const createdAccount = await this.getAccount(accountId);
 
     if (!createdAccount) {
-      throw new Error('Account creation failed');
+      throw new NotFoundError('Account creation failed');
     }
 
     return createdAccount;
