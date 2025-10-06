@@ -7,7 +7,7 @@ import { authMiddleware } from '@/middlewares/auth.midleware';
 
 const router = Router();
 
-router.post('/account', authMiddleware, (req: Request, res: Response) => {
+router.post('/account', (req: Request, res: Response) => {
   const accountController = container.resolve<AccountController>(AccountController.name);
   return accountController.create(req, res);
 });

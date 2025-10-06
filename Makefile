@@ -3,7 +3,7 @@ setup:
 	cp .env.dist .env
 	docker compose up -d
 	./shell/gen-keys
-	./shell/prisma migrate
+	./shell/prisma migrate dev
 	
 .PHONY: start
 start:
