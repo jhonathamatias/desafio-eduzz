@@ -52,4 +52,17 @@ describe('DepositToAccountUseCase', () => {
     );
     expect(repository.save).not.toHaveBeenCalled();
   });
+
+  it('should throw an error if the deposit amount is zero', async () => {
+    const accountId = '123e4567-e89b-12d3-a456-426614174000';
+    const amount = 0;
+    const accountEntity = new AccountEntity('John Doe', new Email('test@example.com'), 'password123', accountId);
+
+    getValidAccountUseCase.execute.mockResolvedValue(accountEntity);
+
+    await expect(depositToAccountUseCase.execute({ accountId, amount })).rejects.toThrow(
+      new InvalidError('Its not possible to deposit zero value')
+    );
+    expect(repository.save).not.toHaveBeenCalled();
+  });
 });

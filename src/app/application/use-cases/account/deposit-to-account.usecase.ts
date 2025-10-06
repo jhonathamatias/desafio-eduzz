@@ -20,8 +20,11 @@ export default class DepositToAccountUseCase implements IApplicationCommand {
     deposit.validate();
 
     await this.saveDeposit(accountEntity.id as string, deposit.amount);
+    const balance = await this.getAccountBalance(accountEntity.id as string);
 
-    return { balance: await this.getAccountBalance(accountEntity.id as string) };
+    console.log(`Deposit of ${deposit.amount} made to account ${accountEntity.id}. New balance is ${balance}.`);
+
+    return { balance };
   }
 
   protected async saveDeposit(accountId: string, amount: number): Promise<void> {

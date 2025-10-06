@@ -20,8 +20,8 @@ export default class AccountController {
   public deposit = async (req: Request, res: Response): Promise<Response> => {
     const { accountId, amount } = req.body;
 
-    const balance = this.depositToAccountUseCase.execute({ accountId, amount });
+    const balance = await this.depositToAccountUseCase.execute({ accountId, amount });
 
-    return res.status(201).json(balance);
+    return res.status(200).json({ ...balance });
   };
 }

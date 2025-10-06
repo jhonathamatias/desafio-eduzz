@@ -40,7 +40,7 @@ describe('ValidateLoginUseCase', () => {
 
     jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
 
-    matchingResult.first.mockResolvedValue({ password: hashedPassword, accountId });
+    matchingResult.first.mockResolvedValue({ password: hashedPassword, id: accountId });
 
     jest.spyOn(mockJwt, 'generateToken').mockReturnValue('mockToken');
 
