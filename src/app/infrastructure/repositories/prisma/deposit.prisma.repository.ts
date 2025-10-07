@@ -11,7 +11,7 @@ export class DepositPrismaRepository implements IDepositRepository {
         amount: true
       },
       where: {
-        accountId
+        account_id: accountId
       }
     });
 

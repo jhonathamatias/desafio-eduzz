@@ -44,7 +44,7 @@ export default class CreateAccountUseCase implements IApplicationCommand {
   }
 
   protected async saveAccount(account: AccountEntity): Promise<string> {
-    this.repository.setCollection('accounts');
+    this.repository.setCollection('account');
 
     await this.repository.save({
       name: account.name,
@@ -56,7 +56,7 @@ export default class CreateAccountUseCase implements IApplicationCommand {
   }
 
   protected async getAccountCreated(id: string): Promise<GetAccountDto | null> {
-    this.repository.setCollection('accounts');
+    this.repository.setCollection('account');
 
     const account = (await this.repository.getById(id)) as AccountType | null;
 
@@ -72,7 +72,7 @@ export default class CreateAccountUseCase implements IApplicationCommand {
   }
 
   protected async emailExists(email: string): Promise<AccountType | null> {
-    this.repository.setCollection('accounts');
+    this.repository.setCollection('account');
     this.criteria.equal('email', email);
 
     const result = await this.repository.matching(this.criteria);

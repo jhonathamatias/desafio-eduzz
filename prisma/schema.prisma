@@ -26,12 +26,29 @@ model Account {
   @@map("accounts")
 }
 
+model Currency {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  symbol    String
+  precision Int
+  is_crypto Boolean
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  deposits Deposit[]
+
+  @@map("currencies")
+}
+
 model Deposit {
   id         String   @id @default(uuid())
-  accountId  String
+  account_id  String
   amount     Float
+  currency_id String
   created_at DateTime? @default(now())
-  account    Account  @relation("AccountDeposits", fields: [accountId], references: [id], onDelete: Cascade)
+  account    Account  @relation("AccountDeposits", fields: [account_id], references: [id], onDelete: Cascade)
+  currency   Currency  @relation(fields: [currency_id], references: [id], onDelete: Cascade)
 
   @@map("deposits")
 }

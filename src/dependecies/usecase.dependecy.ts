@@ -32,6 +32,7 @@ export default function () {
   c.register(DepositToAccountUseCase.name, () => {
     return new DepositToAccountUseCase(
       c.resolve<PrismaRepository>(PrismaRepository.name),
+      c.resolve<PrismaCriteria>(PrismaCriteria.name),
       c.resolve<DepositPrismaRepository>(DepositPrismaRepository.name),
       c.resolve<GetValidAccountUseCase>(GetValidAccountUseCase.name)
     );

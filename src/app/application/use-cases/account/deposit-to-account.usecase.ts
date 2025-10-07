@@ -1,14 +1,19 @@
 import { type DepositDto } from '@/app/application/dtos';
 import { type AccountEntity } from '@/app/domain/entities';
 import { DepositEntity } from '@/app/domain/entities';
-import { type IDepositRepository, type IRepository } from '@/app/infrastructure/repositories/interfaces';
+import {
+  type ICriteria,
+  type IDepositRepository,
+  type IRepository
+} from '@/app/infrastructure/repositories/interfaces';
 
 import type IApplicationCommand from '../interfaces/application-command.interface';
 
 export default class DepositToAccountUseCase implements IApplicationCommand {
   constructor(
-    private readonly repository: IRepository,
-    private readonly depositRepository: IDepositRepository,
+    protected readonly repository: IRepository,
+    protected readonly criteria: ICriteria,
+    protected readonly depositRepository: IDepositRepository,
     protected readonly getValidAccountUseCase: IApplicationCommand<AccountEntity>
   ) {}
 
@@ -22,21 +27,33 @@ export default class DepositToAccountUseCase implements IApplicationCommand {
     await this.saveDeposit(accountEntity.id as string, deposit.amount);
     const balance = await this.getAccountBalance(accountEntity.id as string);
 
-    console.log(`Deposit of ${deposit.amount} made to account ${accountEntity.id}. New balance is ${balance}.`);
-
     return { balance };
   }
 
   protected async saveDeposit(accountId: string, amount: number): Promise<void> {
+    const currencyId = await this.getCurrencyIdByCode('BRL');
+
     this.repository.setCollection('deposits');
 
     await this.repository.save({
-      accountId,
-      amount
+      account_id: accountId,
+      amount,
+      currency_id: currencyId
     });
   }
 
   protected async getAccountBalance(accountId: string): Promise<number> {
     return await this.depositRepository.sumAmountsByAccountId(accountId);
+  }
+
+  protected async getCurrencyIdByCode(code: string): Promise<string | null> {
+    this.repository.setCollection('currency');
+
+    this.criteria.clear();
+    this.criteria.equal('code', code);
+
+    const currency = (await this.repository.matching(this.criteria)).first() as { id: string };
+
+    return currency.id as string;
   }
 }

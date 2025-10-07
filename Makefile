@@ -33,3 +33,11 @@ gen-keys:
 .PHONY: container
 container:
 	docker compose exec node sh
+
+PHONY: migrate
+migrate:
+	./shell/prisma migrate dev
+
+.PHONY: seed
+seed:
+	./shell/prisma db seed

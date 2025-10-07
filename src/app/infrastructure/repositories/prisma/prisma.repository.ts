@@ -36,7 +36,7 @@ export default class PrismaRepository implements IRepository {
 
   public async getInsertedLastId(): Promise<string> {
     const lastRecord = await (this.prisma as any)[this.collection].findFirst({
-      orderBy: { id: 'desc' }
+      orderBy: { created_at: 'desc' }
     });
     return lastRecord?.id || '';
   }

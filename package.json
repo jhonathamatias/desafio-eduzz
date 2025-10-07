@@ -8,6 +8,9 @@
   "engines": {
     "node": ">=22.0.0"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "scripts": {
     "start": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only src/main.ts",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
