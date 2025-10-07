@@ -1,6 +1,7 @@
 import { mock, type MockProxy } from 'jest-mock-extended';
 
 import DepositToAccountUseCase from '@/app/application/use-cases/account/deposit-to-account.usecase';
+import { type GetValidAccountUseCase } from '@/app/application/use-cases/account/get-valid-account.usecase';
 import { AccountEntity } from '@/app/domain/entities';
 import { InvalidError } from '@/app/domain/errors';
 import { Email } from '@/app/domain/value-objects';
@@ -22,7 +23,7 @@ describe('DepositToAccountUseCase', () => {
     repository = mock<IRepository>();
     depositRepository = mock<IDepositRepository>();
     criteria = mock<ICriteria>();
-    getValidAccountUseCase = mock<any>();
+    getValidAccountUseCase = mock<GetValidAccountUseCase>();
 
     depositToAccountUseCase = new DepositToAccountUseCase(
       repository,
@@ -39,7 +40,7 @@ describe('DepositToAccountUseCase', () => {
     const accountEntity = new AccountEntity('John Doe', new Email('test@example.com'), 'password123', accountId);
 
     getValidAccountUseCase.execute.mockResolvedValue(accountEntity);
-    depositRepository.sumAmountsByAccountId.mockResolvedValue(500);
+    depositRepository.sumAmounts.mockResolvedValue(500);
     repository.matching.mockResolvedValue(new Collection([{ id: currencyId }]));
 
     const result = await depositToAccountUseCase.execute({ accountId, amount });
@@ -60,7 +61,7 @@ describe('DepositToAccountUseCase', () => {
     const accountEntity = new AccountEntity('John Doe', new Email('test@example.com'), 'password123', accountId);
 
     getValidAccountUseCase.execute.mockResolvedValue(accountEntity);
-    depositRepository.sumAmountsByAccountId.mockResolvedValue(200);
+    depositRepository.sumAmounts.mockResolvedValue(200);
 
     await expect(depositToAccountUseCase.execute({ accountId, amount })).rejects.toThrow(
       new InvalidError('Its not possible to deposit negative values')

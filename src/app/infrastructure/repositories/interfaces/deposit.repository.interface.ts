@@ -1,3 +1,3 @@
 export default interface IDepositRepository {
-  sumAmountsByAccountId(accountId: string): Promise<number>;
+  sumAmounts(accountId: string, currencyId: string): Promise<number>;
 }

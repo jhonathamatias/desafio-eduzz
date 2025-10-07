@@ -24,15 +24,15 @@ export default class DepositToAccountUseCase implements IApplicationCommand {
 
     deposit.validate();
 
-    await this.saveDeposit(accountEntity.id as string, deposit.amount);
-    const balance = await this.getAccountBalance(accountEntity.id as string);
+    const currencyId = await this.getCurrencyIdByCode('BRL');
+
+    await this.saveDeposit(accountEntity.id as string, currencyId as string, deposit.amount);
+    const balance = await this.getAccountBalance(accountEntity.id as string, currencyId as string);
 
     return { balance };
   }
 
-  protected async saveDeposit(accountId: string, amount: number): Promise<void> {
-    const currencyId = await this.getCurrencyIdByCode('BRL');
-
+  protected async saveDeposit(accountId: string, currencyId: string, amount: number): Promise<void> {
     this.repository.setCollection('deposits');
 
     await this.repository.save({
@@ -42,8 +42,8 @@ export default class DepositToAccountUseCase implements IApplicationCommand {
     });
   }
 
-  protected async getAccountBalance(accountId: string): Promise<number> {
-    return await this.depositRepository.sumAmountsByAccountId(accountId);
+  protected async getAccountBalance(accountId: string, currencyId: string): Promise<number> {
+    return await this.depositRepository.sumAmounts(accountId, currencyId);
   }
 
   protected async getCurrencyIdByCode(code: string): Promise<string | null> {

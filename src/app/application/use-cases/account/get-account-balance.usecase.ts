@@ -9,9 +9,9 @@ export class GetAccountBalanceUseCase {
     protected readonly getValidAccountUseCase: IApplicationCommand<AccountEntity>
   ) {}
 
-  public async execute(accountId: string): Promise<number> {
+  public async execute(accountId: string, currencyId: string): Promise<number> {
     const account = await this.getValidAccountUseCase.execute(accountId);
 
-    return await this.depositRepository.sumAmountsByAccountId(account.id as string);
+    return await this.depositRepository.sumAmounts(account.id as string, currencyId);
   }
 }

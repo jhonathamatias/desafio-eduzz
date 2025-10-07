@@ -5,13 +5,14 @@ import { type IDepositRepository } from '../interfaces';
 export class DepositPrismaRepository implements IDepositRepository {
   constructor(protected prisma: PrismaClient) {}
 
-  public async sumAmountsByAccountId(accountId: string): Promise<number> {
+  public async sumAmounts(accountId: string, currencyId: string): Promise<number> {
     const result = await this.prisma.deposit.aggregate({
       _sum: {
         amount: true
       },
       where: {
-        account_id: accountId
+        account_id: accountId,
+        currency_id: currencyId
       }
     });
 
