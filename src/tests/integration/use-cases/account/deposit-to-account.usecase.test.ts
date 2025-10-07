@@ -4,37 +4,52 @@ import DepositToAccountUseCase from '@/app/application/use-cases/account/deposit
 import { AccountEntity } from '@/app/domain/entities';
 import { InvalidError } from '@/app/domain/errors';
 import { Email } from '@/app/domain/value-objects';
-import { type IDepositRepository, type IRepository } from '@/app/infrastructure/repositories/interfaces';
+import Collection from '@/app/infrastructure/repositories/collection.repository';
+import {
+  type ICriteria,
+  type IDepositRepository,
+  type IRepository
+} from '@/app/infrastructure/repositories/interfaces';
 
 describe('DepositToAccountUseCase', () => {
   let repository: ReturnType<typeof mock<IRepository>>;
   let getValidAccountUseCase: ReturnType<typeof mock<any>>;
+  let criteria: MockProxy<ICriteria>;
   let depositToAccountUseCase: DepositToAccountUseCase;
   let depositRepository: MockProxy<IDepositRepository>;
 
   beforeEach(() => {
     repository = mock<IRepository>();
     depositRepository = mock<IDepositRepository>();
+    criteria = mock<ICriteria>();
     getValidAccountUseCase = mock<any>();
 
-    depositToAccountUseCase = new DepositToAccountUseCase(repository, depositRepository, getValidAccountUseCase);
+    depositToAccountUseCase = new DepositToAccountUseCase(
+      repository,
+      criteria,
+      depositRepository,
+      getValidAccountUseCase
+    );
   });
 
   it('should save a valid deposit to the repository', async () => {
     const accountId = '123e4567-e89b-12d3-a456-426614174000';
+    const currencyId = '123e4567-e89b-12d3-a456-426614174078';
     const amount = 100;
     const accountEntity = new AccountEntity('John Doe', new Email('test@example.com'), 'password123', accountId);
 
     getValidAccountUseCase.execute.mockResolvedValue(accountEntity);
     depositRepository.sumAmountsByAccountId.mockResolvedValue(500);
+    repository.matching.mockResolvedValue(new Collection([{ id: currencyId }]));
 
     const result = await depositToAccountUseCase.execute({ accountId, amount });
 
     expect(getValidAccountUseCase.execute).toHaveBeenCalledWith(accountId);
     expect(repository.setCollection).toHaveBeenCalledWith('deposits');
     expect(repository.save).toHaveBeenCalledWith({
-      accountId,
-      amount
+      account_id: accountId,
+      amount,
+      currency_id: currencyId
     });
     expect(result).toEqual({ balance: 500 });
   });

@@ -42,7 +42,7 @@ describe('CreateAccountUseCase', () => {
 
     const result = await createAccountUseCase.execute({ name, email, password });
 
-    expect(repository.setCollection).toHaveBeenCalledWith('accounts');
+    expect(repository.setCollection).toHaveBeenCalledWith('account');
     expect(repository.save).toHaveBeenCalledWith({
       name,
       email,
