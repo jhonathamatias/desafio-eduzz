@@ -11,11 +11,11 @@ import RabbitMQQueue from '../app/infrastructure/queue/rabbitmq.queue';
   try {
     registerDependencies();
 
-    const amq = container.resolve<RabbitMQQueue>(RabbitMQQueue.name);
+    const queueService = container.resolve<RabbitMQQueue>(RabbitMQQueue.name);
 
     console.log('Listening messages...\n');
 
-    amq.consume([Queues.DEPOSIT_NOTIFICATION], async (queue, message) => {
+    queueService.consume([Queues.DEPOSIT_NOTIFICATION], async (queue, message) => {
       console.log(`Received message from queue ${queue}:`, message);
 
       switch (queue) {
