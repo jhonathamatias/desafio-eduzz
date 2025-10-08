@@ -25,3 +25,11 @@ services:
     image: redis/redis-stack:7.4.0-v7
     ports:
       - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:4.1.4-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+    - .env

@@ -5,6 +5,7 @@ import { type GetValidAccountUseCase } from '@/app/application/use-cases/account
 import { AccountEntity } from '@/app/domain/entities';
 import { InvalidError } from '@/app/domain/errors';
 import { Email } from '@/app/domain/value-objects';
+import type IQueue from '@/app/infrastructure/queue/interfaces/queue.interface';
 import Collection from '@/app/infrastructure/repositories/collection.repository';
 import {
   type ICriteria,
@@ -18,18 +19,23 @@ describe('DepositToAccountUseCase', () => {
   let criteria: MockProxy<ICriteria>;
   let depositToAccountUseCase: DepositToAccountUseCase;
   let depositRepository: MockProxy<IDepositRepository>;
+  let queue: MockProxy<IQueue>;
 
   beforeEach(() => {
     repository = mock<IRepository>();
     depositRepository = mock<IDepositRepository>();
     criteria = mock<ICriteria>();
     getValidAccountUseCase = mock<GetValidAccountUseCase>();
+    queue = mock<IQueue>();
+
+    queue.publish.mockResolvedValue();
 
     depositToAccountUseCase = new DepositToAccountUseCase(
       repository,
       criteria,
       depositRepository,
-      getValidAccountUseCase
+      getValidAccountUseCase,
+      queue
     );
   });
 

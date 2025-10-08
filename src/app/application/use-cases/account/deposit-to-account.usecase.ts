@@ -1,6 +1,8 @@
 import { type DepositDto } from '@/app/application/dtos';
 import { type AccountEntity } from '@/app/domain/entities';
 import { DepositEntity } from '@/app/domain/entities';
+import { Queues } from '@/app/infrastructure/queue/enums/queue.enum';
+import type IQueue from '@/app/infrastructure/queue/interfaces/queue.interface';
 import {
   type ICriteria,
   type IDepositRepository,
@@ -14,7 +16,8 @@ export default class DepositToAccountUseCase implements IApplicationCommand {
     protected readonly repository: IRepository,
     protected readonly criteria: ICriteria,
     protected readonly depositRepository: IDepositRepository,
-    protected readonly getValidAccountUseCase: IApplicationCommand<AccountEntity>
+    protected readonly getValidAccountUseCase: IApplicationCommand<AccountEntity>,
+    protected readonly queue: IQueue
   ) {}
 
   public async execute({ accountId, amount }: DepositDto): Promise<{ balance: number }> {
@@ -28,6 +31,14 @@ export default class DepositToAccountUseCase implements IApplicationCommand {
 
     await this.saveDeposit(accountEntity.id as string, currencyId as string, deposit.amount);
     const balance = await this.getAccountBalance(accountEntity.id as string, currencyId as string);
+
+    await this.queue.publish(Queues.DEPOSIT_NOTIFICATION, {
+      accountId: accountEntity.id,
+      email: accountEntity.email.getValue(),
+      name: accountEntity.name,
+      amount: deposit.amount,
+      currencyId
+    });
 
     return { balance };
   }

@@ -4,6 +4,7 @@ import { GetAccountBalanceUseCase } from '@/app/application/use-cases/account/ge
 import { GetValidAccountUseCase } from '@/app/application/use-cases/account/get-valid-account.usecase';
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
 import Jwt from '@/app/infrastructure/auth/jwt';
+import RabbitMQQueue from '@/app/infrastructure/queue/rabbitmq.queue';
 import { DepositPrismaRepository } from '@/app/infrastructure/repositories/prisma/deposit.prisma.repository';
 import PrismaCriteria from '@/app/infrastructure/repositories/prisma/prisma.criteria';
 import PrismaRepository from '@/app/infrastructure/repositories/prisma/prisma.repository';
@@ -34,7 +35,8 @@ export default function () {
       c.resolve<PrismaRepository>(PrismaRepository.name),
       c.resolve<PrismaCriteria>(PrismaCriteria.name),
       c.resolve<DepositPrismaRepository>(DepositPrismaRepository.name),
-      c.resolve<GetValidAccountUseCase>(GetValidAccountUseCase.name)
+      c.resolve<GetValidAccountUseCase>(GetValidAccountUseCase.name),
+      c.resolve<RabbitMQQueue>(RabbitMQQueue.name)
     );
   });
 
