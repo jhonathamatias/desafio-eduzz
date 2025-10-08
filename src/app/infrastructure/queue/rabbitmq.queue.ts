@@ -23,5 +23,28 @@ export default class RabbitMQQueue implements IQueue {
     channel.sendToQueue(queue, Buffer.from(JSON.stringify(payload)), { persistent: true });
   }
 
-  public async consume(queues: Queues[], callback: (queue: Queues, message: any) => Promise<void>): Promise<void> {}
+  public async consume(queues: Queues[], callback: (queue: Queues, message: any) => Promise<void>): Promise<void> {
+    const channel = await RabbitMQQueue.getChannel();
+
+    queues.forEach(async queue => {
+      await channel.assertQueue(queue, { durable: true });
+
+      channel.consume(
+        queue,
+        async msg => {
+          if (msg) {
+            try {
+              const content = JSON.parse(msg.content.toString());
+              await callback(queue, content);
+              channel.ack(msg);
+            } catch (error) {
+              console.error(`Erro ao processar mensagem da fila ${queue}:`, error);
+              channel.nack(msg);
+            }
+          }
+        },
+        { noAck: false }
+      );
+    });
+  }
 }

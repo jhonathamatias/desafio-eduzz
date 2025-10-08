@@ -17,7 +17,8 @@
     "test": "jest",
     "test:watch": "ts-jest --watch",
     "test:coverage": "ts-jest --coverage",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "start-workers": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only src/workers/index.ts"
   },
   "devDependencies": {
     "@eduzz/eslint-config": "^2.5.6",

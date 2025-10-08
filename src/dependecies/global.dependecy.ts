@@ -1,10 +1,13 @@
 import { JwtFactory } from '@/app/factories/jwt.factory';
 import Jwt from '@/app/infrastructure/auth/jwt';
+import { SendGridMail } from '@/app/infrastructure/mail/sendgrid.mail';
 import RabbitMQQueue from '@/app/infrastructure/queue/rabbitmq.queue';
-import { container } from '@/container';
+import { container as c } from '@/container';
 
 export default function () {
-  container.register(Jwt.name, () => JwtFactory.factory());
+  c.register(Jwt.name, () => JwtFactory.factory());
 
-  container.register(RabbitMQQueue.name, () => new RabbitMQQueue());
+  c.register(RabbitMQQueue.name, () => new RabbitMQQueue());
+
+  c.register(SendGridMail.name, () => new SendGridMail());
 }

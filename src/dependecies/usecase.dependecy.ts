@@ -1,9 +1,11 @@
 import CreateAccountUseCase from '@/app/application/use-cases/account/create-account.usecase';
+import { DepositNotificationUseCase } from '@/app/application/use-cases/account/deposit-notification.usecase';
 import DepositToAccountUseCase from '@/app/application/use-cases/account/deposit-to-account.usecase';
 import { GetAccountBalanceUseCase } from '@/app/application/use-cases/account/get-account-balance.usecase';
 import { GetValidAccountUseCase } from '@/app/application/use-cases/account/get-valid-account.usecase';
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
 import Jwt from '@/app/infrastructure/auth/jwt';
+import { SendGridMail } from '@/app/infrastructure/mail/sendgrid.mail';
 import RabbitMQQueue from '@/app/infrastructure/queue/rabbitmq.queue';
 import { DepositPrismaRepository } from '@/app/infrastructure/repositories/prisma/deposit.prisma.repository';
 import PrismaCriteria from '@/app/infrastructure/repositories/prisma/prisma.criteria';
@@ -45,5 +47,9 @@ export default function () {
       c.resolve<DepositPrismaRepository>(DepositPrismaRepository.name),
       c.resolve<GetValidAccountUseCase>(GetValidAccountUseCase.name)
     );
+  });
+
+  c.register<DepositNotificationUseCase>(DepositNotificationUseCase.name, () => {
+    return new DepositNotificationUseCase(c.resolve<SendGridMail>(SendGridMail.name));
   });
 }
