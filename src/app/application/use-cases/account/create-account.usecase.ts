@@ -73,7 +73,6 @@ export default class CreateAccountUseCase implements IApplicationCommand {
 
   protected async emailExists(email: string): Promise<AccountType | null> {
     this.repository.setCollection('account');
-    this.criteria.clear();
     this.criteria.equal('email', email);
 
     const result = await this.repository.matching(this.criteria);

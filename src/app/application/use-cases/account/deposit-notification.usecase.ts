@@ -7,13 +7,12 @@ export class DepositNotificationUseCase implements IApplicationCommand<void> {
   constructor(protected readonly mail: IMail) {}
 
   public async execute({ email, name, amount }: DepositNotificationDto): Promise<void> {
-    const formattedAmount = amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
+    console.log('Sending deposit notification email...');
     this.mail.send(
       email,
       'Notificação de Depósito',
       `Olá ${name},\n\nTemos o prazer de informar 
-      que um depósito no valor de ${formattedAmount} 
+      que um depósito no valor de ${amount} 
       foi realizado com sucesso na sua conta.\n\nObrigado por escolher 
       nossos serviços!\n\nAtenciosamente,\nEduzz Investimentos`
     );
