@@ -1,3 +1,4 @@
+import BitcoinRepository from '@/app/infrastructure/repositories/api/bitcoin.repository';
 import { DepositPrismaRepository } from '@/app/infrastructure/repositories/prisma/deposit.prisma.repository';
 import PrismaCriteria from '@/app/infrastructure/repositories/prisma/prisma.criteria';
 import PrismaRepository from '@/app/infrastructure/repositories/prisma/prisma.repository';
@@ -16,4 +17,6 @@ export default function () {
   c.register(DepositPrismaRepository.name, () => {
     return new DepositPrismaRepository(c.resolve<PrismaClient>(PrismaClient.name));
   });
+
+  c.register(BitcoinRepository.name, () => new BitcoinRepository());
 }

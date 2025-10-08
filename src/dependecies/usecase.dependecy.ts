@@ -3,10 +3,12 @@ import { DepositNotificationUseCase } from '@/app/application/use-cases/account/
 import DepositToAccountUseCase from '@/app/application/use-cases/account/deposit-to-account.usecase';
 import { GetAccountBalanceUseCase } from '@/app/application/use-cases/account/get-account-balance.usecase';
 import { GetValidAccountUseCase } from '@/app/application/use-cases/account/get-valid-account.usecase';
+import GetBTCPriceUseCase from '@/app/application/use-cases/crypto/get-btc-price.usecase';
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
 import Jwt from '@/app/infrastructure/auth/jwt';
 import { SendGridMail } from '@/app/infrastructure/mail/sendgrid.mail';
 import RabbitMQQueue from '@/app/infrastructure/queue/rabbitmq.queue';
+import BitcoinRepository from '@/app/infrastructure/repositories/api/bitcoin.repository';
 import { DepositPrismaRepository } from '@/app/infrastructure/repositories/prisma/deposit.prisma.repository';
 import PrismaCriteria from '@/app/infrastructure/repositories/prisma/prisma.criteria';
 import PrismaRepository from '@/app/infrastructure/repositories/prisma/prisma.repository';
@@ -51,5 +53,9 @@ export default function () {
 
   c.register<DepositNotificationUseCase>(DepositNotificationUseCase.name, () => {
     return new DepositNotificationUseCase(c.resolve<SendGridMail>(SendGridMail.name));
+  });
+
+  c.register(GetBTCPriceUseCase.name, () => {
+    return new GetBTCPriceUseCase(c.resolve<BitcoinRepository>(BitcoinRepository.name));
   });
 }
