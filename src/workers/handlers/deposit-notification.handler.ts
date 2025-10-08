@@ -6,4 +6,6 @@ export default async function depositNoficationHandler(payload: DepositNotificat
   const depositNotification = container.resolve<DepositNotificationUseCase>(DepositNotificationUseCase.name);
 
   await depositNotification.execute(payload);
+
+  console.info('\nDeposit notification sent successfully');
 }
