@@ -1,18 +1,30 @@
-import { mock } from 'jest-mock-extended';
+import { mock, type MockProxy } from 'jest-mock-extended';
 
 import { NotFoundError } from '@/app/application/errors';
 import { GetValidAccountUseCase } from '@/app/application/use-cases/account/get-valid-account.usecase';
 import { AccountEntity } from '@/app/domain/entities';
 import { Email } from '@/app/domain/value-objects';
-import { type IRepository } from '@/app/infrastructure/repositories/interfaces';
+import Collection from '@/app/infrastructure/repositories/collection.repository';
+import {
+  type ITransactionRepository,
+  type ICriteria,
+  type IRepository
+} from '@/app/infrastructure/repositories/interfaces';
 
 describe('GetValidAccountUseCase', () => {
-  let repository: IRepository;
+  let repository: MockProxy<IRepository>;
   let getValidAccountUseCase: GetValidAccountUseCase;
+  let criteriaMock: MockProxy<ICriteria>;
+  let transactionRepositoryMock: MockProxy<ITransactionRepository>;
 
   beforeEach(() => {
     repository = mock<IRepository>();
-    getValidAccountUseCase = new GetValidAccountUseCase(repository);
+    criteriaMock = mock<ICriteria>();
+    transactionRepositoryMock = mock<ITransactionRepository>();
+    criteriaMock.clear.mockReturnValueOnce();
+    transactionRepositoryMock.getTotalTransaction.mockResolvedValue(0);
+
+    getValidAccountUseCase = new GetValidAccountUseCase(repository, criteriaMock, transactionRepositoryMock);
   });
 
   it('should return a valid account when the account exists', async () => {
@@ -24,7 +36,7 @@ describe('GetValidAccountUseCase', () => {
       password: 'hashed-password'
     };
     (repository.getById as jest.Mock).mockResolvedValue(accountData);
-
+    repository.matching.mockResolvedValue(new Collection([{ id: 'currency-id', code: 'BRL' }]));
     const result = await getValidAccountUseCase.execute(accountId);
 
     expect(result).toBeInstanceOf(AccountEntity);

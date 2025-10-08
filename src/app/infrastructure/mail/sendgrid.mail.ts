@@ -17,7 +17,6 @@ export class SendGridMail implements IMail {
         subject,
         text: body
       };
-      console.log('Sending email via SendGrid:', msg);
       await sgMail.send(msg);
     } catch (error) {
       if (error instanceof Error && 'response' in error) {

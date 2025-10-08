@@ -1,4 +1,4 @@
-import { type GetBTCPriceDto } from '@/app/application/dtos/crypto.dto';
+import { type GetBTCPriceDto } from '@/app/application/dtos';
 import HttpClient from '@/app/infrastructure/http/client.http';
 
 export default class MercadoBitcoinAPI {

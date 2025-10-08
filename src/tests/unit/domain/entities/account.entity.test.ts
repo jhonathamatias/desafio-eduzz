@@ -48,4 +48,16 @@ describe('AccountEntity', () => {
     expect(() => account.canBeSaved()).toThrow(AlreadyExistsError);
     expect(() => account.canBeSaved()).toThrow('Account already exists');
   });
+
+  it('should correctly calculate the balance', () => {
+    const email = new Email('test@example.com');
+    const account = new AccountEntity('John Doe', email, 'password123', '123');
+
+    const totalDeposit = 1000;
+    const totalWithdraw = 400;
+
+    const balance = account.calculateBalance(totalDeposit, totalWithdraw);
+
+    expect(balance).toBe(600);
+  });
 });

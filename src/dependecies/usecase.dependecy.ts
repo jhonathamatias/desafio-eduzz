@@ -3,15 +3,15 @@ import { DepositNotificationUseCase } from '@/app/application/use-cases/account/
 import DepositToAccountUseCase from '@/app/application/use-cases/account/deposit-to-account.usecase';
 import { GetAccountBalanceUseCase } from '@/app/application/use-cases/account/get-account-balance.usecase';
 import { GetValidAccountUseCase } from '@/app/application/use-cases/account/get-valid-account.usecase';
-import GetBTCPriceUseCase from '@/app/application/use-cases/crypto/get-btc-price.usecase';
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
+import GetBTCPriceUseCase from '@/app/application/use-cases/trades/get-btc-price.usecase';
 import Jwt from '@/app/infrastructure/auth/jwt';
 import { SendGridMail } from '@/app/infrastructure/mail/sendgrid.mail';
 import RabbitMQQueue from '@/app/infrastructure/queue/rabbitmq.queue';
 import BitcoinRepository from '@/app/infrastructure/repositories/api/bitcoin.repository';
-import { DepositPrismaRepository } from '@/app/infrastructure/repositories/prisma/deposit.prisma.repository';
 import PrismaCriteria from '@/app/infrastructure/repositories/prisma/prisma.criteria';
 import PrismaRepository from '@/app/infrastructure/repositories/prisma/prisma.repository';
+import { TransactionPrismaRepository } from '@/app/infrastructure/repositories/prisma/transaction.prisma.repository';
 import { container as c } from '@/container';
 
 export default function () {
@@ -31,14 +31,17 @@ export default function () {
   });
 
   c.register<GetValidAccountUseCase>(GetValidAccountUseCase.name, () => {
-    return new GetValidAccountUseCase(c.resolve<PrismaRepository>(PrismaRepository.name));
+    return new GetValidAccountUseCase(
+      c.resolve<PrismaRepository>(PrismaRepository.name),
+      c.resolve<PrismaCriteria>(PrismaCriteria.name),
+      c.resolve<TransactionPrismaRepository>(TransactionPrismaRepository.name)
+    );
   });
 
   c.register(DepositToAccountUseCase.name, () => {
     return new DepositToAccountUseCase(
       c.resolve<PrismaRepository>(PrismaRepository.name),
       c.resolve<PrismaCriteria>(PrismaCriteria.name),
-      c.resolve<DepositPrismaRepository>(DepositPrismaRepository.name),
       c.resolve<GetValidAccountUseCase>(GetValidAccountUseCase.name),
       c.resolve<RabbitMQQueue>(RabbitMQQueue.name)
     );
@@ -46,7 +49,7 @@ export default function () {
 
   c.register(GetAccountBalanceUseCase.name, () => {
     return new GetAccountBalanceUseCase(
-      c.resolve<DepositPrismaRepository>(DepositPrismaRepository.name),
+      c.resolve<TransactionPrismaRepository>(TransactionPrismaRepository.name),
       c.resolve<GetValidAccountUseCase>(GetValidAccountUseCase.name)
     );
   });

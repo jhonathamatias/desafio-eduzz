@@ -7,7 +7,8 @@ export default class AccountEntity {
     public name: string,
     public email: Email,
     public password: string,
-    public id?: string
+    public id?: string,
+    public balance: number = 0
   ) {}
 
   public accountExists(): boolean {
@@ -28,5 +29,17 @@ export default class AccountEntity {
     }
 
     return true;
+  }
+
+  public calculateBalance(totalDeposit: number, totalWithdraw: number): number {
+    return totalDeposit - totalWithdraw;
+  }
+
+  public deposit(amount: number): number {
+    return amount;
+  }
+
+  public setBalance(totalDeposit: number, totalWithdraw: number): void {
+    this.balance = this.calculateBalance(totalDeposit, totalWithdraw);
   }
 }

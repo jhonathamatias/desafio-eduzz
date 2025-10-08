@@ -1,6 +1,6 @@
 import { type Request, type Response } from 'express';
 
-import { type GetBTCPriceDto } from '../application/dtos/crypto.dto';
+import { type GetBTCPriceDto } from '../application/dtos';
 import type IApplicationCommand from '../application/use-cases/interfaces/application-command.interface';
 
 export default class BitcoinController {

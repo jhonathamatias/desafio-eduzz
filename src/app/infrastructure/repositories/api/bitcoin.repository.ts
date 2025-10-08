@@ -1,4 +1,4 @@
-import { type GetBTCPriceDto } from '@/app/application/dtos/crypto.dto';
+import { type GetBTCPriceDto } from '@/app/application/dtos';
 import MercadoBitcoinAPI from '@/app/infrastructure/api/mercadobitcoin.api';
 
 import { type IBitcoinRepository } from '../interfaces/bitcoin.repository.interface';

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -14,41 +8,126 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TransactionType {
+  DEPOSIT
+  WITHDRAW
+  BUY
+  SELL
+}
+
+enum TransactionDirection {
+  CREDIT
+  DEBIT
+}
+
+enum EmailLogType {
+  DEPOSIT
+  BUY
+  SELL
+  GENERIC
+}
+
 model Account {
-  id         String   @id @default(uuid())
-  name       String
-  email      String   @unique
-  password   String
-  created_at DateTime? @default(now())
-  updated_at DateTime @updatedAt
-  deposits   Deposit[] @relation("AccountDeposits")
+  id          String        @id @default(uuid())
+  name        String
+  email       String        @unique
+  password    String
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+
+  transactions Transaction[]
+  investments  Investment[]
+  email_logs   EmailLog[]
 
   @@map("accounts")
 }
 
 model Currency {
-  id        String   @id @default(uuid())
-  code      String   @unique
-  name      String
-  symbol    String
-  precision Int
-  is_crypto Boolean
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  symbol      String
+  precision   Int
+  is_crypto   Boolean
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
-  deposits Deposit[]
+  transactions Transaction[]
+
+  price_history_as_base PriceHistory[] @relation("PriceHistoryBaseCurrency")
+  price_history_as_quote PriceHistory[] @relation("PriceHistoryQuoteCurrency")
+
+  investments_as_base  Investment[] @relation("InvestmentBaseCurrency")
+  investments_as_quote Investment[] @relation("InvestmentQuoteCurrency")
 
   @@map("currencies")
 }
 
-model Deposit {
-  id         String   @id @default(uuid())
-  account_id  String
-  amount     Float
-  currency_id String
-  created_at DateTime? @default(now())
-  account    Account  @relation("AccountDeposits", fields: [account_id], references: [id], onDelete: Cascade)
-  currency   Currency  @relation(fields: [currency_id], references: [id], onDelete: Cascade)
+model Transaction {
+  id                     String              @id @default(uuid())
+  account_id             String
+  type                   TransactionType
+  direction              TransactionDirection
+  currency_id            String
+  amount                 Decimal             @db.Decimal(18, 2)
+  created_at             DateTime            @default(now())
 
-  @@map("deposits")
+  account   Account  @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  currency  Currency @relation(fields: [currency_id], references: [id])
+
+  @@index([account_id, created_at])
+  @@index([type, created_at])
+  @@map("transactions")
+}
+
+model Investment {
+  id                 String   @id @default(uuid())
+  account_id         String
+  buy_transaction_id String   @unique
+  base_currency_id   String
+  quote_currency_id  String
+  base_amount        Decimal  @db.Decimal(28, 8) // quantidade comprada
+  quote_amount       Decimal  @db.Decimal(18, 2) // valor investido (R$)
+  price_at_buy       Decimal  @db.Decimal(18, 2) // preço do BTC no momento
+  is_active          Boolean  @default(true)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  account         Account   @relation(fields: [account_id], references: [id], onDelete: Cascade)
+
+  base_currency  Currency @relation("InvestmentBaseCurrency",  fields: [base_currency_id],  references: [id])
+  quote_currency Currency @relation("InvestmentQuoteCurrency", fields: [quote_currency_id], references: [id])
+
+  @@index([account_id, is_active])
+  @@map("investments")
+}
+
+model PriceHistory {
+  id                String   @id @default(uuid())
+  base_currency_id  String
+  quote_currency_id String
+  buy_price         Decimal  @db.Decimal(18, 2)
+  sell_price        Decimal  @db.Decimal(18, 2)
+  reference_time    DateTime
+  created_at        DateTime @default(now())
+
+  base_currency  Currency @relation("PriceHistoryBaseCurrency",  fields: [base_currency_id],  references: [id])
+  quote_currency Currency @relation("PriceHistoryQuoteCurrency", fields: [quote_currency_id], references: [id])
+
+  @@unique([base_currency_id, quote_currency_id, reference_time])
+  @@index([reference_time])
+  @@map("price_history")
+}
+
+model EmailLog {
+  id         String       @id @default(uuid())
+  account_id String
+  subject    String
+  body       String
+  type       EmailLogType
+  sent_at    DateTime     @default(now())
+
+  account Account @relation(fields: [account_id], references: [id], onDelete: Cascade)
+
+  @@map("email_logs")
 }

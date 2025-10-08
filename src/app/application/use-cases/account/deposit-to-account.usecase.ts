@@ -3,19 +3,15 @@ import { type AccountEntity } from '@/app/domain/entities';
 import { DepositEntity } from '@/app/domain/entities';
 import { Queues } from '@/app/infrastructure/queue/enums/queue.enum';
 import type IQueue from '@/app/infrastructure/queue/interfaces/queue.interface';
-import {
-  type ICriteria,
-  type IDepositRepository,
-  type IRepository
-} from '@/app/infrastructure/repositories/interfaces';
+import { type ICriteria, type IRepository } from '@/app/infrastructure/repositories/interfaces';
 
+import { TransactionDirection, TransactionType } from '../../enums/transaction.enum';
 import type IApplicationCommand from '../interfaces/application-command.interface';
 
 export default class DepositToAccountUseCase implements IApplicationCommand {
   constructor(
     protected readonly repository: IRepository,
     protected readonly criteria: ICriteria,
-    protected readonly depositRepository: IDepositRepository,
     protected readonly getValidAccountUseCase: IApplicationCommand<AccountEntity>,
     protected readonly queue: IQueue
   ) {}
@@ -30,7 +26,6 @@ export default class DepositToAccountUseCase implements IApplicationCommand {
     const currencyId = await this.getCurrencyIdByCode('BRL');
 
     await this.saveDeposit(accountEntity.id as string, currencyId as string, deposit.amount);
-    const balance = await this.getAccountBalance(accountEntity.id as string, currencyId as string);
 
     await this.queue.publish(Queues.DEPOSIT_NOTIFICATION, {
       accountId: accountEntity.id,
@@ -40,21 +35,19 @@ export default class DepositToAccountUseCase implements IApplicationCommand {
       currencyId
     });
 
-    return { balance };
+    return { balance: accountEntity.balance };
   }
 
   protected async saveDeposit(accountId: string, currencyId: string, amount: number): Promise<void> {
-    this.repository.setCollection('deposits');
+    this.repository.setCollection('transaction');
 
     await this.repository.save({
       account_id: accountId,
       amount,
-      currency_id: currencyId
+      currency_id: currencyId,
+      direction: TransactionDirection.CREDIT,
+      type: TransactionType.DEPOSIT
     });
-  }
-
-  protected async getAccountBalance(accountId: string, currencyId: string): Promise<number> {
-    return await this.depositRepository.sumAmounts(accountId, currencyId);
   }
 
   protected async getCurrencyIdByCode(code: string): Promise<string | null> {

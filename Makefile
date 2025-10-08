@@ -1,9 +1,11 @@
 .PHONY: setup
+// TODO: Revisar o setup para rodar apenas na primeira vez
 setup:
 	cp .env.dist .env
 	docker compose up -d
 	./shell/gen-keys
 	./shell/prisma migrate dev
+	./shell/prisma db seed
 	
 .PHONY: start
 start:

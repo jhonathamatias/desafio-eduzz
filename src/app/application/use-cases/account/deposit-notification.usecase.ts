@@ -7,6 +7,10 @@ export class DepositNotificationUseCase implements IApplicationCommand<void> {
   constructor(protected readonly mail: IMail) {}
 
   public async execute({ email, name, amount }: DepositNotificationDto): Promise<void> {
+    /**
+     * TODO: Extrair a formatação para um helper/util
+     * TODO: Tratar o currency dinamicamente
+     */
     const formattedAmount = new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'

@@ -1,7 +1,7 @@
 import CreateAccountUseCase from '@/app/application/use-cases/account/create-account.usecase';
 import DepositToAccountUseCase from '@/app/application/use-cases/account/deposit-to-account.usecase';
 import { GetAccountBalanceUseCase } from '@/app/application/use-cases/account/get-account-balance.usecase';
-import GetBTCPriceUseCase from '@/app/application/use-cases/crypto/get-btc-price.usecase';
+import GetBTCPriceUseCase from '@/app/application/use-cases/trades/get-btc-price.usecase';
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
 import AccountController from '@/app/controller/account.controller';
 import BitcoinController from '@/app/controller/bitcoin.controller';
