@@ -65,7 +65,6 @@ A arquitetura do projeto segue os princípios de **Clean Architecture**, separan
   **Body**:
   ```json
   {
-    "accountId": "id-da-conta",
     "amount": 1000
   }
   ```
@@ -100,8 +99,7 @@ A arquitetura do projeto segue os princípios de **Clean Architecture**, separan
   **Body**:
   ```json
   {
-    "accountId": "id-da-conta",
-    "amountToPurchaseBRL": 500
+    "amount": 500
   }
   ```
 
