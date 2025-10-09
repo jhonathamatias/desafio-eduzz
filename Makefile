@@ -43,3 +43,7 @@ migrate:
 .PHONY: seed
 seed:
 	./shell/prisma db seed
+
+.PHONY: workers
+workers:
+	./shell/yarn start-workers
