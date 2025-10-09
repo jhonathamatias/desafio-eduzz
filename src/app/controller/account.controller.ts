@@ -6,7 +6,7 @@ import type IApplicationCommand from '@/app/application/use-cases/interfaces/app
 export default class AccountController {
   constructor(
     protected readonly createAccountUseCase: IApplicationCommand<GetAccountDto>,
-    protected readonly depositToAccountUseCase: IApplicationCommand<{ balance: number }>,
+    protected readonly depositToAccountUseCase: IApplicationCommand,
     protected readonly getAccountBalanceUseCase: IApplicationCommand<number>,
     protected readonly getTransactionsStatementUseCase: IApplicationCommand<any[]>
   ) {}
@@ -23,9 +23,9 @@ export default class AccountController {
     const { amount } = req.body;
     const { accountId } = req.params;
 
-    const balance = await this.depositToAccountUseCase.execute({ accountId, amount });
+    await this.depositToAccountUseCase.execute({ accountId, amount });
 
-    return res.status(200).json({ ...balance });
+    return res.status(200).json({ message: 'Deposit request received' });
   };
 
   public getBalance = async (req: Request, res: Response): Promise<Response> => {

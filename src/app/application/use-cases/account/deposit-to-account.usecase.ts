@@ -16,7 +16,7 @@ export default class DepositToAccountUseCase implements IApplicationCommand {
     protected readonly queue: IQueue
   ) {}
 
-  public async execute({ accountId, amount }: DepositDto): Promise<{ balance: number }> {
+  public async execute({ accountId, amount }: DepositDto): Promise<void> {
     const accountEntity = await this.getValidAccountUseCase.execute(accountId);
 
     const deposit = new DepositEntity(amount);
@@ -25,7 +25,7 @@ export default class DepositToAccountUseCase implements IApplicationCommand {
 
     const currencyId = await this.getCurrencyIdByCode('BRL');
 
-    await this.saveDeposit(accountEntity.id as string, currencyId as string, deposit.amount);
+    this.saveDeposit(accountEntity.id as string, currencyId as string, deposit.amount);
 
     await this.queue.publish(Queues.DEPOSIT_NOTIFICATION, {
       accountId: accountEntity.id,
@@ -34,9 +34,6 @@ export default class DepositToAccountUseCase implements IApplicationCommand {
       amount: deposit.amount,
       currencyId
     });
-
-    /** TODO: O valor do balance não esta vindo atualizado */
-    return { balance: accountEntity.balance };
   }
 
   protected async saveDeposit(accountId: string, currencyId: string, amount: number): Promise<void> {
