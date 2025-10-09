@@ -42,4 +42,16 @@ export default class AccountEntity {
   public setBalance(totalDeposit: number, totalWithdraw: number): void {
     this.balance = this.calculateBalance(totalDeposit, totalWithdraw);
   }
+
+  public hasSufficientBalance(amount: number): boolean {
+    return this.balance >= amount;
+  }
+
+  public validateWithdraw(amount: number): boolean {
+    if (!this.hasSufficientBalance(amount)) {
+      throw new InvalidError('Insufficient balance');
+    }
+
+    return true;
+  }
 }

@@ -5,6 +5,8 @@ import { GetAccountBalanceUseCase } from '@/app/application/use-cases/account/ge
 import { GetValidAccountUseCase } from '@/app/application/use-cases/account/get-valid-account.usecase';
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
 import GetBTCPriceUseCase from '@/app/application/use-cases/trades/get-btc-price.usecase';
+import { ProcessPurchaseBTCUseCase } from '@/app/application/use-cases/trades/process-purchase-btc.usecase';
+import PurchaseBTCUseCase from '@/app/application/use-cases/trades/purchase-btc.usecase';
 import Jwt from '@/app/infrastructure/auth/jwt';
 import { SendGridMail } from '@/app/infrastructure/mail/sendgrid.mail';
 import RabbitMQQueue from '@/app/infrastructure/queue/rabbitmq.queue';
@@ -60,5 +62,22 @@ export default function () {
 
   c.register(GetBTCPriceUseCase.name, () => {
     return new GetBTCPriceUseCase(c.resolve<BitcoinRepository>(BitcoinRepository.name));
+  });
+
+  c.register(PurchaseBTCUseCase.name, () => {
+    return new PurchaseBTCUseCase(
+      c.resolve<GetValidAccountUseCase>(GetValidAccountUseCase.name),
+      c.resolve<RabbitMQQueue>(RabbitMQQueue.name)
+    );
+  });
+
+  c.register(ProcessPurchaseBTCUseCase.name, () => {
+    return new ProcessPurchaseBTCUseCase(
+      c.resolve<PrismaRepository>(PrismaRepository.name),
+      c.resolve<PrismaCriteria>(PrismaCriteria.name),
+      c.resolve<GetValidAccountUseCase>(GetValidAccountUseCase.name),
+      c.resolve<BitcoinRepository>(BitcoinRepository.name),
+      c.resolve<RabbitMQQueue>(RabbitMQQueue.name)
+    );
   });
 }

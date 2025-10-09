@@ -28,13 +28,14 @@ enum EmailLogType {
 }
 
 model Account {
-  id          String        @id @default(uuid())
-  name        String
-  email       String        @unique
-  password    String
-  created_at  DateTime      @default(now())
-  updated_at  DateTime      @updatedAt
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String
+  email      String   @unique
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
+  // Relations
   transactions Transaction[]
   investments  Investment[]
   email_logs   EmailLog[]
@@ -43,18 +44,19 @@ model Account {
 }
 
 model Currency {
-  id          String   @id @default(uuid())
-  code        String   @unique
-  name        String
-  symbol      String
-  precision   Int
-  is_crypto   Boolean
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code       String   @unique
+  name       String
+  symbol     String
+  precision  Int
+  is_crypto  Boolean
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
+  // Relations
   transactions Transaction[]
 
-  price_history_as_base PriceHistory[] @relation("PriceHistoryBaseCurrency")
+  price_history_as_base  PriceHistory[] @relation("PriceHistoryBaseCurrency")
   price_history_as_quote PriceHistory[] @relation("PriceHistoryQuoteCurrency")
 
   investments_as_base  Investment[] @relation("InvestmentBaseCurrency")
@@ -64,16 +66,18 @@ model Currency {
 }
 
 model Transaction {
-  id                     String              @id @default(uuid())
-  account_id             String
-  type                   TransactionType
-  direction              TransactionDirection
-  currency_id            String
-  amount                 Decimal             @db.Decimal(18, 2)
-  created_at             DateTime            @default(now())
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  account_id  String               @db.Uuid
+  type        TransactionType
+  direction   TransactionDirection
+  currency_id String               @db.Uuid
+  amount      Decimal              @db.Decimal(18, 8)
+  created_at  DateTime             @default(now())
 
-  account   Account  @relation(fields: [account_id], references: [id], onDelete: Cascade)
-  currency  Currency @relation(fields: [currency_id], references: [id])
+  // Relations
+  account    Account     @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  currency   Currency    @relation(fields: [currency_id], references: [id])
+  investment Investment?
 
   @@index([account_id, created_at])
   @@index([type, created_at])
@@ -81,37 +85,39 @@ model Transaction {
 }
 
 model Investment {
-  id                 String   @id @default(uuid())
-  account_id         String
-  buy_transaction_id String   @unique
-  base_currency_id   String
-  quote_currency_id  String
-  base_amount        Decimal  @db.Decimal(28, 8) // quantidade comprada
-  quote_amount       Decimal  @db.Decimal(18, 2) // valor investido (R$)
-  price_at_buy       Decimal  @db.Decimal(18, 2) // preço do BTC no momento
-  is_active          Boolean  @default(true)
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  account_id        String   @db.Uuid
+  transaction_id    String   @unique @db.Uuid
+  base_currency_id  String   @db.Uuid
+  quote_currency_id String   @db.Uuid
+  base_amount       Decimal  @db.Decimal(28, 8) // Quantidade comprada
+  quote_amount      Decimal  @db.Decimal(18, 2) // Valor investido (R$)
+  price_at_buy      Decimal  @db.Decimal(18, 2) // Preço do BTC no momento
+  is_active         Boolean  @default(true)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
 
-  account         Account   @relation(fields: [account_id], references: [id], onDelete: Cascade)
-
-  base_currency  Currency @relation("InvestmentBaseCurrency",  fields: [base_currency_id],  references: [id])
-  quote_currency Currency @relation("InvestmentQuoteCurrency", fields: [quote_currency_id], references: [id])
+  // Relations
+  account        Account     @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  transaction    Transaction @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+  base_currency  Currency    @relation("InvestmentBaseCurrency", fields: [base_currency_id], references: [id])
+  quote_currency Currency    @relation("InvestmentQuoteCurrency", fields: [quote_currency_id], references: [id])
 
   @@index([account_id, is_active])
   @@map("investments")
 }
 
 model PriceHistory {
-  id                String   @id @default(uuid())
-  base_currency_id  String
-  quote_currency_id String
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  base_currency_id  String   @db.Uuid
+  quote_currency_id String   @db.Uuid
   buy_price         Decimal  @db.Decimal(18, 2)
   sell_price        Decimal  @db.Decimal(18, 2)
   reference_time    DateTime
   created_at        DateTime @default(now())
 
-  base_currency  Currency @relation("PriceHistoryBaseCurrency",  fields: [base_currency_id],  references: [id])
+  // Relations
+  base_currency  Currency @relation("PriceHistoryBaseCurrency", fields: [base_currency_id], references: [id])
   quote_currency Currency @relation("PriceHistoryQuoteCurrency", fields: [quote_currency_id], references: [id])
 
   @@unique([base_currency_id, quote_currency_id, reference_time])
@@ -120,13 +126,14 @@ model PriceHistory {
 }
 
 model EmailLog {
-  id         String       @id @default(uuid())
-  account_id String
+  id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  account_id String       @db.Uuid
   subject    String
   body       String
   type       EmailLogType
   sent_at    DateTime     @default(now())
 
+  // Relations
   account Account @relation(fields: [account_id], references: [id], onDelete: Cascade)
 
   @@map("email_logs")

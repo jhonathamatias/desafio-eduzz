@@ -60,4 +60,37 @@ describe('AccountEntity', () => {
 
     expect(balance).toBe(600);
   });
+
+  it('should correctly set the balance', () => {
+    const email = new Email('test@example.com');
+    const account = new AccountEntity('John Doe', email, 'password123', '123');
+    account.setBalance(2000, 800);
+
+    expect(account.balance).toBe(1200);
+  });
+
+  it('should return true if account has sufficient balance', () => {
+    const email = new Email('test@example.com');
+    const account = new AccountEntity('John Doe', email, 'password123', '123');
+    account.setBalance(1500, 500);
+
+    expect(account.hasSufficientBalance(800)).toBe(true);
+  });
+
+  it('should return false if account does not have sufficient balance', () => {
+    const email = new Email('test@example.com');
+    const account = new AccountEntity('John Doe', email, 'password123', '123');
+    account.setBalance(1000, 300);
+
+    expect(account.hasSufficientBalance(800)).toBe(false);
+  });
+
+  it('should throw InvalidError when trying to withdraw more than the balance', () => {
+    const email = new Email('test@example.com');
+    const account = new AccountEntity('John Doe', email, 'password123', '123');
+    account.setBalance(500, 200);
+
+    expect(() => account.validateWithdraw(400)).toThrow(InvalidError);
+    expect(() => account.validateWithdraw(400)).toThrow('Insufficient balance');
+  });
 });

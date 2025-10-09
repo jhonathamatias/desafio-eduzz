@@ -33,6 +33,11 @@ router.get('/btc/price', authMiddleware, (req: Request, res: Response) => {
   return bitcoinController.getBitcoinPrice(req, res);
 });
 
+router.post('/btc/purchase', authMiddleware, (req: Request, res: Response) => {
+  const bitcoinController = container.resolve<BitcoinController>(BitcoinController.name);
+  return bitcoinController.purchaseBTC(req, res);
+});
+
 router.get('/', (req: Request, res: Response) => {
   res.send('Server running on port!');
 });

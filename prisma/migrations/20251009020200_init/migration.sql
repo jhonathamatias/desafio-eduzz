@@ -1,10 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `deposits` table. If the table is not empty, all the data it contains will be lost.
-  - Made the column `created_at` on table `accounts` required. This step will fail if there are existing NULL values in that column.
-
-*/
 -- CreateEnum
 CREATE TYPE "TransactionType" AS ENUM ('DEPOSIT', 'WITHDRAW', 'BUY', 'SELL');
 
@@ -14,28 +7,40 @@ CREATE TYPE "TransactionDirection" AS ENUM ('CREDIT', 'DEBIT');
 -- CreateEnum
 CREATE TYPE "EmailLogType" AS ENUM ('DEPOSIT', 'BUY', 'SELL', 'GENERIC');
 
--- DropForeignKey
-ALTER TABLE "public"."deposits" DROP CONSTRAINT "deposits_account_id_fkey";
+-- CreateTable
+CREATE TABLE "accounts" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
--- DropForeignKey
-ALTER TABLE "public"."deposits" DROP CONSTRAINT "deposits_currency_id_fkey";
+    CONSTRAINT "accounts_pkey" PRIMARY KEY ("id")
+);
 
--- AlterTable
-ALTER TABLE "accounts" ALTER COLUMN "created_at" SET NOT NULL;
+-- CreateTable
+CREATE TABLE "currencies" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "code" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "symbol" TEXT NOT NULL,
+    "precision" INTEGER NOT NULL,
+    "is_crypto" BOOLEAN NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
--- DropTable
-DROP TABLE "public"."deposits";
+    CONSTRAINT "currencies_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "transactions" (
-    "id" TEXT NOT NULL,
-    "account_id" TEXT NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "account_id" UUID NOT NULL,
     "type" "TransactionType" NOT NULL,
     "direction" "TransactionDirection" NOT NULL,
-    "currency_id" TEXT NOT NULL,
-    "amount" DECIMAL(18,2) NOT NULL,
-    "related_quote_id" TEXT,
-    "related_investment_id" TEXT,
+    "currency_id" UUID NOT NULL,
+    "amount" DECIMAL(18,8) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "transactions_pkey" PRIMARY KEY ("id")
@@ -43,11 +48,11 @@ CREATE TABLE "transactions" (
 
 -- CreateTable
 CREATE TABLE "investments" (
-    "id" TEXT NOT NULL,
-    "account_id" TEXT NOT NULL,
-    "buy_transaction_id" TEXT NOT NULL,
-    "base_currency_id" TEXT NOT NULL,
-    "quote_currency_id" TEXT NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "account_id" UUID NOT NULL,
+    "transaction_id" UUID NOT NULL,
+    "base_currency_id" UUID NOT NULL,
+    "quote_currency_id" UUID NOT NULL,
     "base_amount" DECIMAL(28,8) NOT NULL,
     "quote_amount" DECIMAL(18,2) NOT NULL,
     "price_at_buy" DECIMAL(18,2) NOT NULL,
@@ -59,22 +64,10 @@ CREATE TABLE "investments" (
 );
 
 -- CreateTable
-CREATE TABLE "quotes" (
-    "id" TEXT NOT NULL,
-    "base_currency_id" TEXT NOT NULL,
-    "quote_currency_id" TEXT NOT NULL,
-    "buy_price" DECIMAL(18,2) NOT NULL,
-    "sell_price" DECIMAL(18,2) NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "quotes_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "price_history" (
-    "id" TEXT NOT NULL,
-    "base_currency_id" TEXT NOT NULL,
-    "quote_currency_id" TEXT NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "base_currency_id" UUID NOT NULL,
+    "quote_currency_id" UUID NOT NULL,
     "buy_price" DECIMAL(18,2) NOT NULL,
     "sell_price" DECIMAL(18,2) NOT NULL,
     "reference_time" TIMESTAMP(3) NOT NULL,
@@ -85,8 +78,8 @@ CREATE TABLE "price_history" (
 
 -- CreateTable
 CREATE TABLE "email_logs" (
-    "id" TEXT NOT NULL,
-    "account_id" TEXT NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "account_id" UUID NOT NULL,
     "subject" TEXT NOT NULL,
     "body" TEXT NOT NULL,
     "type" "EmailLogType" NOT NULL,
@@ -96,19 +89,22 @@ CREATE TABLE "email_logs" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "accounts_email_key" ON "accounts"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "currencies_code_key" ON "currencies"("code");
+
+-- CreateIndex
 CREATE INDEX "transactions_account_id_created_at_idx" ON "transactions"("account_id", "created_at");
 
 -- CreateIndex
 CREATE INDEX "transactions_type_created_at_idx" ON "transactions"("type", "created_at");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "investments_buy_transaction_id_key" ON "investments"("buy_transaction_id");
+CREATE UNIQUE INDEX "investments_transaction_id_key" ON "investments"("transaction_id");
 
 -- CreateIndex
 CREATE INDEX "investments_account_id_is_active_idx" ON "investments"("account_id", "is_active");
-
--- CreateIndex
-CREATE INDEX "quotes_base_currency_id_quote_currency_id_created_at_idx" ON "quotes"("base_currency_id", "quote_currency_id", "created_at");
 
 -- CreateIndex
 CREATE INDEX "price_history_reference_time_idx" ON "price_history"("reference_time");
@@ -123,25 +119,16 @@ ALTER TABLE "transactions" ADD CONSTRAINT "transactions_account_id_fkey" FOREIGN
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_currency_id_fkey" FOREIGN KEY ("currency_id") REFERENCES "currencies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "transactions" ADD CONSTRAINT "transactions_related_quote_id_fkey" FOREIGN KEY ("related_quote_id") REFERENCES "quotes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "investments" ADD CONSTRAINT "investments_account_id_fkey" FOREIGN KEY ("account_id") REFERENCES "accounts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "investments" ADD CONSTRAINT "investments_buy_transaction_id_fkey" FOREIGN KEY ("buy_transaction_id") REFERENCES "transactions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "investments" ADD CONSTRAINT "investments_transaction_id_fkey" FOREIGN KEY ("transaction_id") REFERENCES "transactions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "investments" ADD CONSTRAINT "investments_base_currency_id_fkey" FOREIGN KEY ("base_currency_id") REFERENCES "currencies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "investments" ADD CONSTRAINT "investments_quote_currency_id_fkey" FOREIGN KEY ("quote_currency_id") REFERENCES "currencies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "quotes" ADD CONSTRAINT "quotes_base_currency_id_fkey" FOREIGN KEY ("base_currency_id") REFERENCES "currencies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "quotes" ADD CONSTRAINT "quotes_quote_currency_id_fkey" FOREIGN KEY ("quote_currency_id") REFERENCES "currencies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "price_history" ADD CONSTRAINT "price_history_base_currency_id_fkey" FOREIGN KEY ("base_currency_id") REFERENCES "currencies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
