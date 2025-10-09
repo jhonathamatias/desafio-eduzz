@@ -42,7 +42,7 @@ export class GetInvestmentsPositionsUseCase implements IApplicationCommand<GetIn
       return {
         purchaseDate: new Date(investment.created_at),
         investedAmount: Number(investment.quote_amount),
-        btcPriceAtPurchase: Number(investment.base_amount),
+        btcPriceAtPurchase: Number(investment.price_at_buy.toFixed(2)),
         priceVariationPercentage: Number(priceVariationPercentage.toFixed(2)),
         currentGrossValue: Number(currentGrossValue.toFixed(2))
       };
