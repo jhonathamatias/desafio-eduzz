@@ -35,6 +35,7 @@ export default class DepositToAccountUseCase implements IApplicationCommand {
       currencyId
     });
 
+    /** TODO: O valor do balance não esta vindo atualizado */
     return { balance: accountEntity.balance };
   }
 
