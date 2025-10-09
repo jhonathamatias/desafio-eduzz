@@ -62,6 +62,10 @@ A arquitetura do projeto segue os princípios de **Clean Architecture**, separan
 
 - **POST `/account/deposit`**  
   Realiza um depósito na conta do usuário.  
+    **Headers**:
+  ```
+  Authorization: Bearer <seu-token-jwt>
+  ```
   **Body**:
   ```json
   {
@@ -108,9 +112,15 @@ A arquitetura do projeto segue os princípios de **Clean Architecture**, separan
   **Body**:
   ```json
   {
-    "accountId": "id-da-conta",
-    "amountToSellBRL": 500
+    "amount": 500
   }
+  ```
+
+- **GET `/btc/position`**  
+  Retorna posição do investimento.  
+  **Headers**:
+  ```
+  Authorization: Bearer <seu-token-jwt>
   ```
 
 - **GET `/volume`**  
@@ -126,7 +136,11 @@ A arquitetura do projeto segue os princípios de **Clean Architecture**, separan
   ```
   Authorization: Bearer <seu-token-jwt>
   ```
-
+- **GET `/history`**  
+  Retorna o histórico de preços do Bitcoin.  
+  **Headers**:
+  ```
+  Authorization: Bearer <seu-token-jwt>
 ---
 
 ### **Outras Rotas**
