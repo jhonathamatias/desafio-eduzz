@@ -36,6 +36,7 @@ export class ProcessPurchaseBTCUseCase {
       await this.getCurrencyIdByCode('BTC')
     ]);
 
+    /** TODO: Aqui posso usar unit of work */
     await this.withdraw(account.id as string, amount, currencyBRL);
     await this.buyBitcoin(account.id as string, btcAmount, currencyBTC);
 

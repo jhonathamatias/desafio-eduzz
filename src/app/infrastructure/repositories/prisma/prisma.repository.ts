@@ -18,6 +18,7 @@ export default class PrismaRepository implements IRepository {
 
   public async save(entity: object): Promise<boolean> {
     try {
+      console.log('Saving entity to collection:', this.collection, entity);
       await (this.prisma as any)[this.collection].create({ data: entity });
       return true;
     } catch (error) {

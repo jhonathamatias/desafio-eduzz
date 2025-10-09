@@ -10,6 +10,7 @@ import GetDailyBTCTotalsUseCase from '@/app/application/use-cases/trades/get-dai
 import GetHistoryBTCPriceUseCase from '@/app/application/use-cases/trades/get-history-btc-price';
 import { ProcessPurchaseBTCUseCase } from '@/app/application/use-cases/trades/process-purchase-btc.usecase';
 import PurchaseBTCUseCase from '@/app/application/use-cases/trades/purchase-btc.usecase';
+import SellBTCUseCase from '@/app/application/use-cases/trades/sell-btc.usecase';
 import Jwt from '@/app/infrastructure/auth/jwt';
 import { SendGridMail } from '@/app/infrastructure/mail/sendgrid.mail';
 import RabbitMQQueue from '@/app/infrastructure/queue/rabbitmq.queue';
@@ -100,5 +101,14 @@ export default function () {
 
   c.register(GetHistoryBTCPriceUseCase.name, () => {
     return new GetHistoryBTCPriceUseCase(c.resolve<BitcoinHistoryRedisRepository>(BitcoinHistoryRedisRepository.name));
+  });
+
+  c.register(SellBTCUseCase.name, () => {
+    return new SellBTCUseCase(
+      c.resolve<PrismaRepository>(PrismaRepository.name),
+      c.resolve<PrismaCriteria>(PrismaCriteria.name),
+      c.resolve<RabbitMQQueue>(RabbitMQQueue.name),
+      c.resolve<GetBTCPriceUseCase>(GetBTCPriceUseCase.name)
+    );
   });
 }

@@ -7,5 +7,7 @@ export enum TransactionType {
   WITHDRAW = 'WITHDRAW',
   DEPOSIT = 'DEPOSIT',
   BUY = 'BUY',
-  SELL = 'SELL'
+  SELL = 'SELL',
+  PARTIAL_WITHDRAW = 'PARTIAL_WITHDRAW',
+  REINVESTMENT = 'REINVESTMENT'
 }

@@ -38,6 +38,11 @@ router.post('/btc/purchase', authMiddleware, (req: Request, res: Response) => {
   return tradeController.purchaseBTC(req, res);
 });
 
+router.post('/btc/sell', authMiddleware, (req: Request, res: Response) => {
+  const tradeController = container.resolve<TradeController>(TradeController.name);
+  return tradeController.sellBTC(req, res);
+});
+
 router.get('/volume', authMiddleware, (req: Request, res: Response) => {
   const tradeController = container.resolve<TradeController>(TradeController.name);
   return tradeController.getDailyBTCTotal(req, res);

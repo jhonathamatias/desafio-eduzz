@@ -13,6 +13,8 @@ enum TransactionType {
   WITHDRAW
   BUY
   SELL
+  PARTIAL_WITHDRAW
+  REINVESTMENT
 }
 
 enum TransactionDirection {

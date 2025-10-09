@@ -34,15 +34,17 @@ export class TransactionPrismaRepository implements ITransactionRepository {
 
     const result = await this.prisma.$queryRaw<{ btcPurchaseVolume: bigint | null; btcSellVolume: bigint | null }[]>(
       Prisma.sql`SELECT 
-        SUM(CASE WHEN type = 'BUY' AND direction = 'CREDIT' THEN amount ELSE 0 END) AS "btcPurchaseVolume",
-        SUM(CASE WHEN type = 'SELL' AND direction = 'DEBIT' THEN amount ELSE 0 END) AS "btcSellVolume"
-      FROM transactions
-      WHERE account_id = ${accountId}::uuid
-        AND currency_id = (SELECT id FROM currencies WHERE code = 'BTC')
-        AND type IN ('BUY', 'SELL')
-        AND direction IN ('CREDIT', 'DEBIT')
-        AND created_at >= CURRENT_DATE
-        AND created_at < CURRENT_DATE + INTERVAL '1 day';`
+        SUM(CASE WHEN t.type = 'BUY' AND t.direction = 'CREDIT' THEN t.amount ELSE 0 END) AS "btcPurchaseVolume",
+        SUM(CASE WHEN t.type = 'SELL' AND t.direction = 'DEBIT' THEN t.amount ELSE 0 END) AS "btcSellVolume"
+      FROM transactions t
+      INNER JOIN investments i ON t.id = i.transaction_id
+      WHERE t.account_id = ${accountId}::uuid
+        AND t.currency_id = (SELECT id FROM currencies WHERE code = 'BTC')
+        AND i.is_active = TRUE
+        AND t.type IN ('BUY', 'SELL')
+        AND t.direction IN ('CREDIT', 'DEBIT')
+        AND t.created_at >= CURRENT_DATE
+        AND t.created_at < CURRENT_DATE + INTERVAL '1 day';`
     );
 
     const summary = result[0] || { btcPurchaseVolume: 0, btcSellVolume: 0 };
