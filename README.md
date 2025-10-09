@@ -136,11 +136,6 @@ A arquitetura do projeto segue os princípios de **Clean Architecture**, separan
   ```
   Authorization: Bearer <seu-token-jwt>
   ```
-- **GET `/history`**  
-  Retorna o histórico de preços do Bitcoin.  
-  **Headers**:
-  ```
-  Authorization: Bearer <seu-token-jwt>
 ---
 
 ### **Outras Rotas**
