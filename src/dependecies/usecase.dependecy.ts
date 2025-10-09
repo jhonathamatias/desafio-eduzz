@@ -8,6 +8,7 @@ import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-log
 import GetBTCPriceUseCase from '@/app/application/use-cases/trades/get-btc-price.usecase';
 import GetDailyBTCTotalsUseCase from '@/app/application/use-cases/trades/get-daily-btc-total.usecase';
 import GetHistoryBTCPriceUseCase from '@/app/application/use-cases/trades/get-history-btc-price';
+import { GetInvestmentsPositionsUseCase } from '@/app/application/use-cases/trades/get-investments-positions';
 import { ProcessPurchaseBTCUseCase } from '@/app/application/use-cases/trades/process-purchase-btc.usecase';
 import PurchaseBTCUseCase from '@/app/application/use-cases/trades/purchase-btc.usecase';
 import SellBTCUseCase from '@/app/application/use-cases/trades/sell-btc.usecase';
@@ -108,6 +109,14 @@ export default function () {
       c.resolve<PrismaRepository>(PrismaRepository.name),
       c.resolve<PrismaCriteria>(PrismaCriteria.name),
       c.resolve<RabbitMQQueue>(RabbitMQQueue.name),
+      c.resolve<GetBTCPriceUseCase>(GetBTCPriceUseCase.name)
+    );
+  });
+
+  c.register(GetInvestmentsPositionsUseCase.name, () => {
+    return new GetInvestmentsPositionsUseCase(
+      c.resolve<PrismaRepository>(PrismaRepository.name),
+      c.resolve<PrismaCriteria>(PrismaCriteria.name),
       c.resolve<GetBTCPriceUseCase>(GetBTCPriceUseCase.name)
     );
   });

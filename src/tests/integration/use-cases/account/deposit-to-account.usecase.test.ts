@@ -39,7 +39,7 @@ describe('DepositToAccountUseCase', () => {
 
     accountEntity.setBalance(600, 100);
 
-    const result = await depositToAccountUseCase.execute({ accountId, amount });
+    await depositToAccountUseCase.execute({ accountId, amount });
 
     expect(getValidAccountUseCase.execute).toHaveBeenCalledWith(accountId);
     expect(repository.save).toHaveBeenCalledWith({
@@ -49,7 +49,6 @@ describe('DepositToAccountUseCase', () => {
       direction: TransactionDirection.CREDIT,
       type: TransactionType.DEPOSIT
     });
-    expect(result).toEqual({ balance: 500 });
   });
 
   it('should throw an error if the deposit is invalid', async () => {

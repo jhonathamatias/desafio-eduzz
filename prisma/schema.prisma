@@ -40,7 +40,6 @@ model Account {
   // Relations
   transactions Transaction[]
   investments  Investment[]
-  email_logs   EmailLog[]
 
   @@map("accounts")
 }
@@ -57,9 +56,6 @@ model Currency {
 
   // Relations
   transactions Transaction[]
-
-  price_history_as_base  PriceHistory[] @relation("PriceHistoryBaseCurrency")
-  price_history_as_quote PriceHistory[] @relation("PriceHistoryQuoteCurrency")
 
   investments_as_base  Investment[] @relation("InvestmentBaseCurrency")
   investments_as_quote Investment[] @relation("InvestmentQuoteCurrency")
@@ -107,36 +103,4 @@ model Investment {
 
   @@index([account_id, is_active])
   @@map("investments")
-}
-
-model PriceHistory {
-  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  base_currency_id  String   @db.Uuid
-  quote_currency_id String   @db.Uuid
-  buy_price         Decimal  @db.Decimal(18, 2)
-  sell_price        Decimal  @db.Decimal(18, 2)
-  reference_time    DateTime
-  created_at        DateTime @default(now())
-
-  // Relations
-  base_currency  Currency @relation("PriceHistoryBaseCurrency", fields: [base_currency_id], references: [id])
-  quote_currency Currency @relation("PriceHistoryQuoteCurrency", fields: [quote_currency_id], references: [id])
-
-  @@unique([base_currency_id, quote_currency_id, reference_time])
-  @@index([reference_time])
-  @@map("price_history")
-}
-
-model EmailLog {
-  id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  account_id String       @db.Uuid
-  subject    String
-  body       String
-  type       EmailLogType
-  sent_at    DateTime     @default(now())
-
-  // Relations
-  account Account @relation(fields: [account_id], references: [id], onDelete: Cascade)
-
-  @@map("email_logs")
 }

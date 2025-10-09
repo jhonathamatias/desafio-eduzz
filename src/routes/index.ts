@@ -58,6 +58,11 @@ router.get('/history', authMiddleware, (req: Request, res: Response) => {
   return tradeController.getHistoryBTCPrice(req, res);
 });
 
+router.get('/btc/position', authMiddleware, (req: Request, res: Response) => {
+  const tradeController = container.resolve<TradeController>(TradeController.name);
+  return tradeController.getInvestmentsPositions(req, res);
+});
+
 router.get('/', (req: Request, res: Response) => {
   res.send('Server running on port!');
 });

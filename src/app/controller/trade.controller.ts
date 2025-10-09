@@ -12,7 +12,8 @@ export default class TradeController {
       btcSellVolume: number;
     }>,
     protected readonly getHistoryBTCPriceUseCase: IApplicationCommand<{ price: number; date: Date }[]>,
-    protected readonly sellBTCUseCase: IApplicationCommand<void>
+    protected readonly sellBTCUseCase: IApplicationCommand<void>,
+    protected readonly getInvestmentsPositionsUseCase: IApplicationCommand<any[]>
   ) {}
 
   public async getBitcoinPrice(req: Request, res: Response): Promise<Response> {
@@ -51,5 +52,13 @@ export default class TradeController {
     await this.sellBTCUseCase.execute(accountId, amount);
 
     return res.status(200).json({ message: 'Sell request processed' });
+  }
+
+  public async getInvestmentsPositions(req: Request, res: Response): Promise<Response> {
+    const { accountId } = req.params;
+
+    const positions = await this.getInvestmentsPositionsUseCase.execute(accountId);
+
+    return res.status(200).json({ positions });
   }
 }
