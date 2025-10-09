@@ -9,4 +9,6 @@ export default interface ITransactionRepository {
   ): Promise<number>;
 
   getDailyBitcoinSummary(accountId: string): Promise<{ btcPurchaseVolume: number; btcSellVolume: number }>;
+
+  getStatement(accountId: string, startDate?: Date, endDate?: Date): Promise<any[]>;
 }

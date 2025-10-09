@@ -52,4 +52,36 @@ export class TransactionPrismaRepository implements ITransactionRepository {
       btcSellVolume: Number(summary.btcSellVolume || 0)
     };
   }
+
+  public async getStatement(accountId: string, startDate?: Date, endDate?: Date): Promise<any[]> {
+    const today = new Date();
+    const ninetyDaysAgo = new Date(today.setDate(today.getDate() - 90));
+
+    const start = startDate ? new Date(startDate.setHours(0, 0, 0, 0)) : new Date(ninetyDaysAgo.setHours(0, 0, 0, 0));
+    const end = endDate ? new Date(endDate.setHours(23, 59, 59, 999)) : new Date();
+
+    const transactions = await this.prisma.transaction.findMany({
+      where: {
+        account_id: accountId,
+        created_at: {
+          gte: start,
+          lte: end
+        }
+      },
+      orderBy: {
+        created_at: 'desc'
+      },
+      include: { currency: true, investment: true }
+    });
+
+    return transactions.map(transaction => ({
+      id: transaction.id,
+      type: String(transaction.type).toLocaleLowerCase(),
+      amount: Number(transaction.amount),
+      currency: transaction.currency.code,
+      quote: transaction.investment?.quote_amount ? Number(transaction.investment.quote_amount) : null,
+      createdAt: transaction.created_at,
+      priceAtBuy: transaction.investment?.price_at_buy ? Number(transaction.investment.price_at_buy) : null
+    }));
+  }
 }

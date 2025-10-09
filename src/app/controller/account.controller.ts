@@ -7,7 +7,8 @@ export default class AccountController {
   constructor(
     protected readonly createAccountUseCase: IApplicationCommand<GetAccountDto>,
     protected readonly depositToAccountUseCase: IApplicationCommand<{ balance: number }>,
-    protected readonly getAccountBalanceUseCase: IApplicationCommand<number>
+    protected readonly getAccountBalanceUseCase: IApplicationCommand<number>,
+    protected readonly getTransactionsStatementUseCase: IApplicationCommand<any[]>
   ) {}
 
   public create = async (req: Request, res: Response): Promise<Response> => {
@@ -33,5 +34,17 @@ export default class AccountController {
     const balance = await this.getAccountBalanceUseCase.execute(accountId);
 
     return res.status(200).json({ accountId, balance });
+  };
+
+  public getTransactionsStatement = async (req: Request, res: Response): Promise<Response> => {
+    const { accountId } = req.params;
+    const { startDate, endDate } = req.query;
+
+    const start = startDate ? new Date(startDate as string) : undefined;
+    const end = endDate ? new Date(endDate as string) : undefined;
+
+    const statement = await this.getTransactionsStatementUseCase.execute(accountId, start, end);
+
+    return res.status(200).json({ accountId, statement });
   };
 }

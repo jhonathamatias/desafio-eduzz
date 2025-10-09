@@ -2,6 +2,7 @@ import CreateAccountUseCase from '@/app/application/use-cases/account/create-acc
 import { DepositNotificationUseCase } from '@/app/application/use-cases/account/deposit-notification.usecase';
 import DepositToAccountUseCase from '@/app/application/use-cases/account/deposit-to-account.usecase';
 import { GetAccountBalanceUseCase } from '@/app/application/use-cases/account/get-account-balance.usecase';
+import GetTransactionsStatementUseCase from '@/app/application/use-cases/account/get-transactions-statement.usecase';
 import { GetValidAccountUseCase } from '@/app/application/use-cases/account/get-valid-account.usecase';
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
 import GetBTCPriceUseCase from '@/app/application/use-cases/trades/get-btc-price.usecase';
@@ -86,6 +87,12 @@ export default function () {
     return new GetDailyBTCTotalsUseCase(
       c.resolve<TransactionPrismaRepository>(TransactionPrismaRepository.name),
       c.resolve<GetValidAccountUseCase>(GetValidAccountUseCase.name)
+    );
+  });
+
+  c.register(GetTransactionsStatementUseCase.name, () => {
+    return new GetTransactionsStatementUseCase(
+      c.resolve<TransactionPrismaRepository>(TransactionPrismaRepository.name)
     );
   });
 }

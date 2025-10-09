@@ -12,6 +12,6 @@ export class GetAccountBalanceUseCase {
   public async execute(accountId: string): Promise<number> {
     const account = await this.getValidAccountUseCase.execute(accountId);
 
-    return account.balance;
+    return parseFloat(account.balance.toFixed(2));
   }
 }

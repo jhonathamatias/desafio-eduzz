@@ -1,6 +1,7 @@
 import CreateAccountUseCase from '@/app/application/use-cases/account/create-account.usecase';
 import DepositToAccountUseCase from '@/app/application/use-cases/account/deposit-to-account.usecase';
 import { GetAccountBalanceUseCase } from '@/app/application/use-cases/account/get-account-balance.usecase';
+import GetTransactionsStatementUseCase from '@/app/application/use-cases/account/get-transactions-statement.usecase';
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
 import GetBTCPriceUseCase from '@/app/application/use-cases/trades/get-btc-price.usecase';
 import GetDailyBTCTotalUseCase from '@/app/application/use-cases/trades/get-daily-btc-total.usecase';
@@ -15,7 +16,8 @@ export default function () {
     return new AccountController(
       c.resolve<CreateAccountUseCase>(CreateAccountUseCase.name),
       c.resolve<DepositToAccountUseCase>(DepositToAccountUseCase.name),
-      c.resolve<GetAccountBalanceUseCase>(GetAccountBalanceUseCase.name)
+      c.resolve<GetAccountBalanceUseCase>(GetAccountBalanceUseCase.name),
+      c.resolve<GetTransactionsStatementUseCase>(GetTransactionsStatementUseCase.name)
     );
   });
 

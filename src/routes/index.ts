@@ -43,6 +43,11 @@ router.get('/volume', authMiddleware, (req: Request, res: Response) => {
   return tradeController.getDailyBTCTotal(req, res);
 });
 
+router.get('/extract', authMiddleware, (req: Request, res: Response) => {
+  const accountController = container.resolve<AccountController>(AccountController.name);
+  return accountController.getTransactionsStatement(req, res);
+});
+
 router.get('/', (req: Request, res: Response) => {
   res.send('Server running on port!');
 });
