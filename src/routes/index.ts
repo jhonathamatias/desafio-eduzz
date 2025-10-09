@@ -1,8 +1,8 @@
 import { Router, type Request, type Response } from 'express';
 
 import AccountController from '@/app/controller/account.controller';
-import BitcoinController from '@/app/controller/bitcoin.controller';
 import LoginController from '@/app/controller/login.controller';
+import TradeController from '@/app/controller/trade.controller';
 import { container } from '@/container';
 import { authMiddleware } from '@/middlewares/auth.midleware';
 
@@ -29,13 +29,18 @@ router.get('/account/balance', authMiddleware, (req: Request, res: Response) => 
 });
 
 router.get('/btc/price', authMiddleware, (req: Request, res: Response) => {
-  const bitcoinController = container.resolve<BitcoinController>(BitcoinController.name);
-  return bitcoinController.getBitcoinPrice(req, res);
+  const tradeController = container.resolve<TradeController>(TradeController.name);
+  return tradeController.getBitcoinPrice(req, res);
 });
 
 router.post('/btc/purchase', authMiddleware, (req: Request, res: Response) => {
-  const bitcoinController = container.resolve<BitcoinController>(BitcoinController.name);
-  return bitcoinController.purchaseBTC(req, res);
+  const tradeController = container.resolve<TradeController>(TradeController.name);
+  return tradeController.purchaseBTC(req, res);
+});
+
+router.get('/volume', authMiddleware, (req: Request, res: Response) => {
+  const tradeController = container.resolve<TradeController>(TradeController.name);
+  return tradeController.getDailyBTCTotal(req, res);
 });
 
 router.get('/', (req: Request, res: Response) => {

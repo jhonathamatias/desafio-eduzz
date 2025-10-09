@@ -3,10 +3,11 @@ import DepositToAccountUseCase from '@/app/application/use-cases/account/deposit
 import { GetAccountBalanceUseCase } from '@/app/application/use-cases/account/get-account-balance.usecase';
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
 import GetBTCPriceUseCase from '@/app/application/use-cases/trades/get-btc-price.usecase';
+import GetDailyBTCTotalUseCase from '@/app/application/use-cases/trades/get-daily-btc-total.usecase';
 import PurchaseBTCUseCase from '@/app/application/use-cases/trades/purchase-btc.usecase';
 import AccountController from '@/app/controller/account.controller';
-import BitcoinController from '@/app/controller/bitcoin.controller';
 import LoginController from '@/app/controller/login.controller';
+import TradeController from '@/app/controller/trade.controller';
 import { container as c } from '@/container';
 
 export default function () {
@@ -22,10 +23,11 @@ export default function () {
     return new LoginController(c.resolve<ValidateLoginUseCase>(ValidateLoginUseCase.name));
   });
 
-  c.register(BitcoinController.name, () => {
-    return new BitcoinController(
+  c.register(TradeController.name, () => {
+    return new TradeController(
       c.resolve<GetBTCPriceUseCase>(GetBTCPriceUseCase.name),
-      c.resolve<PurchaseBTCUseCase>(PurchaseBTCUseCase.name)
+      c.resolve<PurchaseBTCUseCase>(PurchaseBTCUseCase.name),
+      c.resolve<GetDailyBTCTotalUseCase>(GetDailyBTCTotalUseCase.name)
     );
   });
 }

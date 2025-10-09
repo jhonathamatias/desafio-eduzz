@@ -7,4 +7,6 @@ export default interface ITransactionRepository {
     direction: TransactionDirection,
     type: TransactionType
   ): Promise<number>;
+
+  getDailyBitcoinSummary(accountId: string): Promise<{ btcPurchaseVolume: number; btcSellVolume: number }>;
 }

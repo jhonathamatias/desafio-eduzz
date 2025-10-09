@@ -5,6 +5,7 @@ import { GetAccountBalanceUseCase } from '@/app/application/use-cases/account/ge
 import { GetValidAccountUseCase } from '@/app/application/use-cases/account/get-valid-account.usecase';
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
 import GetBTCPriceUseCase from '@/app/application/use-cases/trades/get-btc-price.usecase';
+import GetDailyBTCTotalsUseCase from '@/app/application/use-cases/trades/get-daily-btc-total.usecase';
 import { ProcessPurchaseBTCUseCase } from '@/app/application/use-cases/trades/process-purchase-btc.usecase';
 import PurchaseBTCUseCase from '@/app/application/use-cases/trades/purchase-btc.usecase';
 import Jwt from '@/app/infrastructure/auth/jwt';
@@ -78,6 +79,13 @@ export default function () {
       c.resolve<GetValidAccountUseCase>(GetValidAccountUseCase.name),
       c.resolve<BitcoinRepository>(BitcoinRepository.name),
       c.resolve<RabbitMQQueue>(RabbitMQQueue.name)
+    );
+  });
+
+  c.register(GetDailyBTCTotalsUseCase.name, () => {
+    return new GetDailyBTCTotalsUseCase(
+      c.resolve<TransactionPrismaRepository>(TransactionPrismaRepository.name),
+      c.resolve<GetValidAccountUseCase>(GetValidAccountUseCase.name)
     );
   });
 }
