@@ -14,6 +14,144 @@ A arquitetura do projeto segue os princípios de **Clean Architecture**, separan
 - **`controller`**: Responsável por receber as requisições e delegar para os casos de uso apropriados.
 - **`workers`**: Processos assíncronos, como consumidores de filas.
 
+## Tecnologias Utilizadas
+
+- **Node.js** com **TypeScript**
+- **Prisma** para ORM
+- **RabbitMQ** para filas de mensagens
+- **Docker** para containerização
+- **Jest** para testes unitários
+- **ESLint** e **Prettier** para padronização de código
+
+---
+
+## Rotas do Sistema
+
+### **Autenticação**
+
+- **POST `/login`**  
+  Realiza a autenticação do usuário e retorna um token JWT.  
+  **Body**:
+  ```json
+  {
+    "email": "usuario@exemplo.com",
+    "password": "senha123"
+  }
+  ```
+  **Resposta**:
+  ```json
+  {
+    "token": "jwt-token-gerado"
+  }
+  ```
+
+---
+
+### **Conta**
+
+- **POST `/account`**  
+  Cria uma nova conta de usuário.  
+  **Body**:
+  ```json
+  {
+    "name": "Usuário Exemplo",
+    "email": "usuario@exemplo.com",
+    "password": "senha123"
+  }
+  ```
+
+- **POST `/account/deposit`**  
+  Realiza um depósito na conta do usuário.  
+  **Body**:
+  ```json
+  {
+    "accountId": "id-da-conta",
+    "amount": 1000
+  }
+  ```
+
+- **GET `/account/balance`**  
+  Retorna o saldo atual da conta do usuário.  
+  **Headers**:
+  ```
+  Authorization: Bearer <seu-token-jwt>
+  ```
+
+- **GET `/extract`**  
+  Retorna o extrato de transações da conta do usuário.  
+  **Headers**:
+  ```
+  Authorization: Bearer <seu-token-jwt>
+  ```
+
+---
+
+### **Bitcoin**
+
+- **GET `/btc/price`**  
+  Retorna o preço atual do Bitcoin.  
+  **Headers**:
+  ```
+  Authorization: Bearer <seu-token-jwt>
+  ```
+
+- **POST `/btc/purchase`**  
+  Realiza a compra de Bitcoin.  
+  **Body**:
+  ```json
+  {
+    "accountId": "id-da-conta",
+    "amountToPurchaseBRL": 500
+  }
+  ```
+
+- **POST `/btc/sell`**  
+  Realiza a venda de Bitcoin.  
+  **Body**:
+  ```json
+  {
+    "accountId": "id-da-conta",
+    "amountToSellBRL": 500
+  }
+  ```
+
+- **GET `/volume`**  
+  Retorna o volume diário total de transações de Bitcoin.  
+  **Headers**:
+  ```
+  Authorization: Bearer <seu-token-jwt>
+  ```
+
+- **GET `/history`**  
+  Retorna o histórico de preços do Bitcoin.  
+  **Headers**:
+  ```
+  Authorization: Bearer <seu-token-jwt>
+  ```
+
+---
+
+### **Outras Rotas**
+
+- **GET `/`**  
+  Retorna uma mensagem indicando que o servidor está em execução.
+
+---
+
+## Como Funciona a Autenticação
+
+O sistema utiliza **JWT (JSON Web Token)** para autenticação e autorização. O fluxo funciona da seguinte forma:
+
+1. O usuário realiza login na rota `/login` com suas credenciais.
+2. Se as credenciais forem válidas, o sistema retorna um token JWT.
+3. O token deve ser enviado no cabeçalho `Authorization` em todas as requisições protegidas:
+   ```
+   Authorization: Bearer <seu-token-jwt>
+   ```
+4. O servidor valida o token em cada requisição. Se o token for inválido ou expirado, a requisição é rejeitada com o código de status `401 Unauthorized`.
+
+---
+
 ### Estrutura de Diretórios
 
 ```
