@@ -222,9 +222,11 @@ docker compose version
 
 2. Execute o script de instalação:
 
-   ```bash
-   ./install.sh
-   ```
+  ```bash
+  chmod +x ./install.sh
+  
+  ./install.sh
+  ```
 
    O script irá:
    - Criar o arquivo `.env` a partir de `.env.dist`.
