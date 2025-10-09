@@ -2,6 +2,7 @@ import BitcoinRepository from '@/app/infrastructure/repositories/api/bitcoin.rep
 import PrismaCriteria from '@/app/infrastructure/repositories/prisma/prisma.criteria';
 import PrismaRepository from '@/app/infrastructure/repositories/prisma/prisma.repository';
 import { TransactionPrismaRepository } from '@/app/infrastructure/repositories/prisma/transaction.prisma.repository';
+import BitcoinHistoryRedisRepository from '@/app/infrastructure/repositories/redis/bitcoin-history.redis.repository';
 import { container as c } from '@/container';
 import { PrismaClient } from '@/generated/prisma';
 
@@ -19,4 +20,6 @@ export default function () {
   });
 
   c.register(BitcoinRepository.name, () => new BitcoinRepository());
+
+  c.register(BitcoinHistoryRedisRepository.name, () => new BitcoinHistoryRedisRepository());
 }

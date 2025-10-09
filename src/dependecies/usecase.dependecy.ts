@@ -7,6 +7,7 @@ import { GetValidAccountUseCase } from '@/app/application/use-cases/account/get-
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
 import GetBTCPriceUseCase from '@/app/application/use-cases/trades/get-btc-price.usecase';
 import GetDailyBTCTotalsUseCase from '@/app/application/use-cases/trades/get-daily-btc-total.usecase';
+import GetHistoryBTCPriceUseCase from '@/app/application/use-cases/trades/get-history-btc-price';
 import { ProcessPurchaseBTCUseCase } from '@/app/application/use-cases/trades/process-purchase-btc.usecase';
 import PurchaseBTCUseCase from '@/app/application/use-cases/trades/purchase-btc.usecase';
 import Jwt from '@/app/infrastructure/auth/jwt';
@@ -16,6 +17,7 @@ import BitcoinRepository from '@/app/infrastructure/repositories/api/bitcoin.rep
 import PrismaCriteria from '@/app/infrastructure/repositories/prisma/prisma.criteria';
 import PrismaRepository from '@/app/infrastructure/repositories/prisma/prisma.repository';
 import { TransactionPrismaRepository } from '@/app/infrastructure/repositories/prisma/transaction.prisma.repository';
+import BitcoinHistoryRedisRepository from '@/app/infrastructure/repositories/redis/bitcoin-history.redis.repository';
 import { container as c } from '@/container';
 
 export default function () {
@@ -94,5 +96,9 @@ export default function () {
     return new GetTransactionsStatementUseCase(
       c.resolve<TransactionPrismaRepository>(TransactionPrismaRepository.name)
     );
+  });
+
+  c.register(GetHistoryBTCPriceUseCase.name, () => {
+    return new GetHistoryBTCPriceUseCase(c.resolve<BitcoinHistoryRedisRepository>(BitcoinHistoryRedisRepository.name));
   });
 }

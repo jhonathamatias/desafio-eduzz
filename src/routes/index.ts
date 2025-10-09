@@ -48,6 +48,11 @@ router.get('/extract', authMiddleware, (req: Request, res: Response) => {
   return accountController.getTransactionsStatement(req, res);
 });
 
+router.get('/history', authMiddleware, (req: Request, res: Response) => {
+  const tradeController = container.resolve<TradeController>(TradeController.name);
+  return tradeController.getHistoryBTCPrice(req, res);
+});
+
 router.get('/', (req: Request, res: Response) => {
   res.send('Server running on port!');
 });

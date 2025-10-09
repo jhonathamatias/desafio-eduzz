@@ -10,7 +10,8 @@ export default class TradeController {
     protected readonly getDailyBTCTotalUseCase: IApplicationCommand<{
       btcPurchaseVolume: number;
       btcSellVolume: number;
-    }>
+    }>,
+    protected readonly getHistoryBTCPriceUseCase: IApplicationCommand<{ price: number; date: Date }[]>
   ) {}
 
   public async getBitcoinPrice(req: Request, res: Response): Promise<Response> {
@@ -34,5 +35,11 @@ export default class TradeController {
     const { btcPurchaseVolume, btcSellVolume } = await this.getDailyBTCTotalUseCase.execute(accountId);
 
     return res.status(200).json({ btcPurchaseVolume, btcSellVolume });
+  }
+
+  public async getHistoryBTCPrice(req: Request, res: Response): Promise<Response> {
+    const history = await this.getHistoryBTCPriceUseCase.execute();
+
+    return res.status(200).json({ history });
   }
 }

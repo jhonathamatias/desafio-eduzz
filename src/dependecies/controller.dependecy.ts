@@ -5,6 +5,7 @@ import GetTransactionsStatementUseCase from '@/app/application/use-cases/account
 import ValidateLoginUseCase from '@/app/application/use-cases/login/validate-login.usecase';
 import GetBTCPriceUseCase from '@/app/application/use-cases/trades/get-btc-price.usecase';
 import GetDailyBTCTotalUseCase from '@/app/application/use-cases/trades/get-daily-btc-total.usecase';
+import GetHistoryBTCPriceUseCase from '@/app/application/use-cases/trades/get-history-btc-price';
 import PurchaseBTCUseCase from '@/app/application/use-cases/trades/purchase-btc.usecase';
 import AccountController from '@/app/controller/account.controller';
 import LoginController from '@/app/controller/login.controller';
@@ -29,7 +30,8 @@ export default function () {
     return new TradeController(
       c.resolve<GetBTCPriceUseCase>(GetBTCPriceUseCase.name),
       c.resolve<PurchaseBTCUseCase>(PurchaseBTCUseCase.name),
-      c.resolve<GetDailyBTCTotalUseCase>(GetDailyBTCTotalUseCase.name)
+      c.resolve<GetDailyBTCTotalUseCase>(GetDailyBTCTotalUseCase.name),
+      c.resolve<GetHistoryBTCPriceUseCase>(GetHistoryBTCPriceUseCase.name)
     );
   });
 }
