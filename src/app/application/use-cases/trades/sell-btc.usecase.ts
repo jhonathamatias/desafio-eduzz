@@ -27,14 +27,12 @@ export default class SellBTCUseCase {
       const quoteAmountBRL = btcAmount * btcPrice.sell;
 
       if (remainingAmountBRL >= quoteAmountBRL) {
-        // Liquida completamente o investimento
         await this.liquidateInvestment(investment.id);
         await this.registerSellBTC(accountId, btcAmount, TransactionType.SELL);
         totalWithdrawnBRL += quoteAmountBRL;
         totalSoldBTC += btcAmount;
         remainingAmountBRL -= quoteAmountBRL;
       } else {
-        // Liquida parcialmente e reinveste o residual
         const btcToSell = remainingAmountBRL / btcPrice.sell;
         const btcResidual = btcAmount - btcToSell;
 
@@ -50,7 +48,6 @@ export default class SellBTCUseCase {
 
     if (totalWithdrawnBRL > 0) {
       await this.registerWithdrawalBRL(accountId, totalWithdrawnBRL);
-      await this.sendEmail(accountId, totalSoldBTC, totalWithdrawnBRL);
     }
   }
 
@@ -103,15 +100,6 @@ export default class SellBTCUseCase {
       currency_id: currencyId,
       direction: TransactionDirection.DEBIT,
       type
-    });
-  }
-
-  private async sendEmail(accountId: string, btcSold: number, amountWithdrawnBRL: number): Promise<void> {
-    await this.queue.publish('SEND_EMAIL', {
-      accountId,
-      subject: 'Venda de Bitcoins realizada',
-      body: `Você vendeu ${btcSold.toFixed(8)} BTC e resgatou R$ ${amountWithdrawnBRL.toFixed(2)}.`,
-      type: 'BTC_SALE'
     });
   }
 

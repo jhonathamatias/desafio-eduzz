@@ -1,6 +1,6 @@
 import { container } from '@/container';
 
-import { depositNotificationHandler, processPurchaseHandler } from './handlers';
+import { depositNotificationHandler, notifyPurchaseBTCHandler, processPurchaseHandler } from './handlers';
 import { Queues } from '../app/infrastructure/queue/enums/queue.enum';
 import RabbitMQQueue from '../app/infrastructure/queue/rabbitmq.queue';
 
@@ -20,6 +20,9 @@ export default function () {
           break;
         case Queues.BTC_PURCHASE:
           await processPurchaseHandler(message);
+          break;
+        case Queues.PURCHASE_NOTIFICATION:
+          await notifyPurchaseBTCHandler(message);
           break;
         default:
           console.warn(`No handler for queue ${queue}`);
